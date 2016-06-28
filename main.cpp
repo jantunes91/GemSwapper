@@ -93,6 +93,10 @@ public:
 
 	void setType(int tempType);
 
+	void setRemoved(bool isRemoved);
+
+	bool isRemoved();
+
 	//Handles mouse event
 	void handleEvent(SDL_Event* e);
 
@@ -109,6 +113,8 @@ private:
 	bool pressed;
 
 	int type;
+
+	bool removed;
 };
 
 //Starts up SDL and creates window
@@ -122,6 +128,9 @@ void swapSquares();
 
 //Checks if there's a sequence and removes it from the board
 bool checkSequence();
+
+//Removes a previously found sequence, given it's end and it's lenght
+void removeSequence(int x, int y, int lenght, int orientation);
 
 //Frees media and shuts down SDL
 void close();
@@ -266,9 +275,10 @@ LButton::LButton()
 	mPosition.y = OFFSET_Y;
 
 	mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
-
 	
 	type = rand() % 5;
+
+	removed = false;
 }
 
 void LButton::setPosition(int x, int y)
@@ -295,6 +305,16 @@ int LButton::getType()
 void LButton::setType(int tempType)
 {
 	type = tempType;
+}
+
+void LButton::setRemoved(bool isRemoved)
+{
+	removed = isRemoved;
+}
+
+bool LButton::isRemoved()
+{
+	return removed;
 }
 
 void LButton::handleEvent(SDL_Event* e)
@@ -373,6 +393,10 @@ void LButton::handleEvent(SDL_Event* e)
 
 void LButton::render()
 {
+	if (removed)
+	{
+		type = -1;
+	}
 	//Show current button sprite
 	if (type == 0)
 	{
@@ -635,7 +659,7 @@ bool checkSequence()
 				else
 				{
 					if (count > 2) {
-						//removeSequence(locationx,locationy,count)
+						removeSequence(location, y, count, 0);
 						sequenceFound = true;
 					}
 					type = gButtons[x + y * 8].getType();
@@ -644,7 +668,7 @@ bool checkSequence()
 			}
 			if (x == 7 && count > 2)
 			{
-				//removeSequence(location,y,count)
+				removeSequence(location, y, count, 0);
 				sequenceFound = true;
 			}
 		}
@@ -675,7 +699,7 @@ bool checkSequence()
 				else
 				{
 					if (count > 2) {
-						//removeSequence(x,location,count)
+						removeSequence(i, location, count, 1);
 						sequenceFound = true;
 					}
 					type = gButtons[i + j * 8].getType();
@@ -684,7 +708,7 @@ bool checkSequence()
 			}
 			if (j == 7 && count > 2)
 			{
-				//removeSequence(x,location,count)
+				removeSequence(i, location, count, 1);
 				sequenceFound = true;
 			}
 		}
@@ -699,6 +723,26 @@ bool checkSequence()
 	}*/
 	
 	return sequenceFound;
+}
+
+//0 = horizontal; 1 = vertical
+void removeSequence(int x, int y, int lenght, int orientation)
+{
+	if (orientation == 0)
+	{
+		for (int remove = x; remove > x - lenght; remove--)
+		{
+			gButtons[remove + y * 8].setRemoved(true);
+		}
+	}
+	else
+	{
+		for (int remove = y; remove > y - lenght; remove--)
+		{
+			gButtons[x + remove * 8].setRemoved(true);
+		}
+	}
+
 }
 
 void close()
@@ -742,6 +786,8 @@ int main(int argc, char* args[])
 
 			//Event handler
 			SDL_Event e;
+
+			checkSequence();
 
 			//While application is running
 			while (!quit)
