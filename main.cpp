@@ -563,10 +563,10 @@ bool loadMedia()
 
 bool isAdjacent(LButton *button0, LButton *button1)
 {
-	if (button1->getPosition().x == button0->getPosition().x + OFFSET_MULTIPLIER ||
-		button1->getPosition().x == button0->getPosition().x - OFFSET_MULTIPLIER ||
-		button1->getPosition().y == button0->getPosition().y + OFFSET_MULTIPLIER ||
-		button1->getPosition().y == button0->getPosition().y - OFFSET_MULTIPLIER)
+	if (button1->getPosition().x == button0->getPosition().x + OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
+		button1->getPosition().x == button0->getPosition().x - OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
+		button1->getPosition().y == button0->getPosition().y + OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x ||
+		button1->getPosition().y == button0->getPosition().y - OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x)
 	{
 		return true;
 	}
