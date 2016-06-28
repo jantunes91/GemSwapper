@@ -581,6 +581,7 @@ void swapSquares()
 	if (!isAdjacent(gPressedButtons[0], gPressedButtons[1]))
 	{
 		gPressedButtons[0]->setPressed(false);
+		gPressedButtons[0] = gPressedButtons[1];
 		pressedCount = 1;
 		return;
 	}
