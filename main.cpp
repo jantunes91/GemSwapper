@@ -642,14 +642,14 @@ bool checkSequence()
 	{
 		for (int x = 0; x < 8; x++)
 		{
-			if (x == 0)
+			if (x == 0 && gButtons[x + y * 8].getType() != -1)
 			{
 				type = gButtons[x + y * 8].getType();
 				count = 1;
 			}
 			else
 			{
-				if (gButtons[x + y * 8].getType() == type)
+				if (gButtons[x + y * 8].getType() == type && gButtons[x + y * 8].getType() != -1)
 				{
 					count++;
 					if (count > 2) {
@@ -682,14 +682,14 @@ bool checkSequence()
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			if (j == 0)
+			if (j == 0 && gButtons[i + j * 8].getType() != -1)
 			{
 				type = gButtons[i + j * 8].getType();
 				count = 1;
 			}
 			else
 			{
-				if (gButtons[i + j * 8].getType() == type)
+				if (gButtons[i + j * 8].getType() == type && gButtons[i + j * 8].getType() != -1)
 				{
 					count++;
 					if (count > 2) {
