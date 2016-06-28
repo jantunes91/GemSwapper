@@ -120,6 +120,9 @@ bool loadMedia();
 //Swaps two squares
 void swapSquares();
 
+//Checks if there's a sequence and removes it from the board
+bool checkSequence();
+
 //Frees media and shuts down SDL
 void close();
 
@@ -588,21 +591,114 @@ void swapSquares()
 	else
 	{
 		int tempType;
-		int tempType1;
-		bool test;
-		test = gPressedButtons[0] == gPressedButtons[1];
 		tempType = gPressedButtons[0]->getType();
-		tempType1 = gPressedButtons[1]->getType();
 		gPressedButtons[0]->setType(gPressedButtons[1]->getType());
 		gPressedButtons[1]->setType(tempType);
+		if(!checkSequence()) //if there's no sequence, revert the swap
+		{
+			tempType = gPressedButtons[0]->getType();
+			gPressedButtons[0]->setType(gPressedButtons[1]->getType());
+			gPressedButtons[1]->setType(tempType);
+		}
 		gPressedButtons[0]->setPressed(false);
 		gPressedButtons[1]->setPressed(false);
 		pressedCount = 0;
-		if (tempType == gPressedButtons[1]->getType() || tempType1 == gPressedButtons[0]->getType())
+	}
+}
+
+bool checkSequence()
+{
+	bool sequenceFound = false;
+
+	// Checks for duplicates in rows
+	int count = 0;
+	int location = -1;
+	int type;
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
 		{
-			OutputDebugString(TEXT("swap done correctly\n"));
+			if (x == 0)
+			{
+				type = gButtons[x + y * 8].getType();
+				count = 1;
+			}
+			else
+			{
+				if (gButtons[x + y * 8].getType() == type)
+				{
+					count++;
+					if (count > 2) {
+						location = x;
+					}
+				}
+				else
+				{
+					if (count > 2) {
+						//removeSequence(locationx,locationy,count)
+						sequenceFound = true;
+					}
+					type = gButtons[x + y * 8].getType();
+					count = 1;
+				}
+			}
+			if (x == 7 && count > 2)
+			{
+				//removeSequence(location,y,count)
+				sequenceFound = true;
+			}
 		}
 	}
+
+	// Checks for duplicates in columns
+	count = 0;
+	location = -1;
+	type;
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			if (j == 0)
+			{
+				type = gButtons[i + j * 8].getType();
+				count = 1;
+			}
+			else
+			{
+				if (gButtons[i + j * 8].getType() == type)
+				{
+					count++;
+					if (count > 2) {
+						location = j;
+					}
+				}
+				else
+				{
+					if (count > 2) {
+						//removeSequence(x,location,count)
+						sequenceFound = true;
+					}
+					type = gButtons[i + j * 8].getType();
+					count = 1;
+				}
+			}
+			if (j == 7 && count > 2)
+			{
+				//removeSequence(x,location,count)
+				sequenceFound = true;
+			}
+		}
+	}
+
+	/*if (location != -1) {
+		for (int remove = count; remove >= 0; remove--)
+		{
+			board[remove][square.y].destroy = true; // Removes the sequence
+			sequenceFound = true;
+		}
+	}*/
+	
+	return sequenceFound;
 }
 
 void close()
