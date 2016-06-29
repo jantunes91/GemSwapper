@@ -603,7 +603,6 @@ bool loadMedia()
 			for (int x = 0; x < 8; x++)
 			{
 				gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
-				gButtons[x + y * 8].setType(rand() % 5);
 			}
 		}
 	}
@@ -649,7 +648,7 @@ void swapSquares()
 		}
 		else
 		{
-			bool test = true;
+			//bool test = true;
 			//while (test)
 			//{
 				dropDownSquares();
@@ -690,7 +689,7 @@ bool checkSequence()
 				}
 				else
 				{
-					if (count > 2) {
+					if (count > 2 && gButtons[x + y * 8].getType() != -1) {
 						removeSequence(location, y, count, 0);
 						sequenceFound = true;
 					}
@@ -813,6 +812,8 @@ void dropDownSquares()
 				gButtons[x + (y + y0) * 8].setRemoved(false);
 				gButtons[x + y * 8].setToUpdate(false);
 				gButtons[x + (y + y0) * 8].setToUpdate(false);
+				gButtons[x + y * 8].updateY = 0;
+				gButtons[x + (y + y0) * 8].updateY = 0;
 			}
 		}
 
