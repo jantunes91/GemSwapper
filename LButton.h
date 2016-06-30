@@ -50,10 +50,10 @@ public:
 	int updateY;
 
 	//Handles mouse event
-	void handleEvent(SDL_Event* e, LButton* gPressedButtons[2], int pressedCount);
+	void handleEvent(SDL_Event* e, LButton* gPressedButtons[2]);
 
 	//Shows button sprite
-	void render();// LTexture gColorSpriteSheetTexture, SDL_Rect gColorSpriteClips[BUTTON_SPRITE_TOTAL], SDL_Renderer* gRenderer);
+	void render();
 
 
 private:

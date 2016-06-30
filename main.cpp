@@ -15,7 +15,7 @@ and may not be redistributed without written permission.*/
 #include "Game.h"
 #include "RenderVariables.h"
 
-int pressedCount;
+//int pressedCount;
 
 ////Mouse button sprites
 //SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
@@ -35,16 +35,16 @@ bool init();
 //Loads media
 bool loadMedia();
 
-//Swaps two squares
-void swapSquares();
-
-//Checks if there's a sequence and removes it from the board
-bool checkSequence();
-
-//Removes a previously found sequence, given it's end and it's lenght
-void removeSequence(int x, int y, int lenght, int orientation);
-
-void dropDownSquares();
+////Swaps two squares
+//void swapSquares();
+//
+////Checks if there's a sequence and removes it from the board
+//bool checkSequence();
+//
+////Removes a previously found sequence, given it's end and it's lenght
+//void removeSequence(int x, int y, int lenght, int orientation);
+//
+//void dropDownSquares();
 
 //Frees media and shuts down SDL
 void close();
@@ -57,8 +57,12 @@ SDL_Window* gWindow = NULL;
 
 //Buttons objects
 LButton gButtons[TOTAL_BUTTONS];
+
 //Pressed Buttons
 LButton *gPressedButtons[2];
+
+//Game instance
+Game game;
 
 bool init()
 {
@@ -223,248 +227,248 @@ bool loadMedia()
 	return success;
 }
 
-bool isAdjacent(LButton *button0, LButton *button1)
-{
-	if (button1->getPosition().x == button0->getPosition().x + OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
-		button1->getPosition().x == button0->getPosition().x - OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
-		button1->getPosition().y == button0->getPosition().y + OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x ||
-		button1->getPosition().y == button0->getPosition().y - OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void swapSquares()
-{
-	if (!isAdjacent(gPressedButtons[0], gPressedButtons[1]))
-	{
-		gPressedButtons[0]->setPressed(false);
-		gPressedButtons[0] = gPressedButtons[1];
-		pressedCount = 1;
-		return;
-	}
-	else
-	{
-		int tempType;
-		tempType = gPressedButtons[0]->getType();
-		gPressedButtons[0]->setType(gPressedButtons[1]->getType());
-		gPressedButtons[1]->setType(tempType);
-		if(!checkSequence()) //if there's no sequence, revert the swap
-		{
-			tempType = gPressedButtons[0]->getType();
-			gPressedButtons[0]->setType(gPressedButtons[1]->getType());
-			gPressedButtons[1]->setType(tempType);
-		}
-		else
-		{
-			dropDownSquares();
-			/*while (checkSequence())
-			{
-				dropDownSquares();
-				
-			}*/
-		}
-		gPressedButtons[0]->setPressed(false);
-		gPressedButtons[1]->setPressed(false);
-		pressedCount = 0;
-	}
-}
-
-bool checkSequence()
-{
-	bool sequenceFound = false;
-
-	// Checks for duplicates in rows
-	int count = 0;
-	int location = -1;
-	int type = -2;
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			if (x == 0 && gButtons[x + y * 8].getType() != -1)
-			{
-				type = gButtons[x + y * 8].getType();
-				count = 1;
-			}
-			else
-			{
-				if (gButtons[x + y * 8].getType() == type && gButtons[x + y * 8].getType() != -1)
-				{
-					count++;
-					if (count > 2) {
-						location = x;
-					}
-				}
-				else
-				{
-					if (count > 2 && gButtons[x + y * 8].getType() != -1) {
-						removeSequence(location, y, count, 0);
-						sequenceFound = true;
-					}
-					type = gButtons[x + y * 8].getType();
-					count = 1;
-				}
-			}
-			if (x == 7 && count > 2)
-			{
-				removeSequence(location, y, count, 0);
-				sequenceFound = true;
-			}
-		}
-	}
-
-	// Checks for duplicates in columns
-	count = 0;
-	location = -1;
-	type = -2;
-	for (int i = 0; i < 8; i++)
-	{
-		for (int j = 0; j < 8; j++)
-		{
-			if (j == 0 && gButtons[i + j * 8].getType() != -1)
-			{
-				type = gButtons[i + j * 8].getType();
-				count = 1;
-			}
-			else
-			{
-				if (gButtons[i + j * 8].getType() == type && gButtons[i + j * 8].getType() != -1)
-				{
-					count++;
-					if (count > 2) {
-						location = j;
-					}
-				}
-				else
-				{
-					if (count > 2 && gButtons[i + j * 8].getType() != -1) {
-						removeSequence(i, location, count, 1);
-						sequenceFound = true;
-					}
-					type = gButtons[i + j * 8].getType();
-					count = 1;
-				}
-			}
-			if (j == 7 && count > 2)
-			{
-				removeSequence(i, location, count, 1);
-				sequenceFound = true;
-			}
-		}
-	}
-
-	/*if (location != -1) {
-		for (int remove = count; remove >= 0; remove--)
-		{
-			board[remove][square.y].destroy = true; // Removes the sequence
-			sequenceFound = true;
-		}
-	}*/
-	
-	return sequenceFound;
-}
-
-//0 = horizontal; 1 = vertical
-void removeSequence(int x, int y, int lenght, int orientation)
-{
-	if (orientation == 0)
-	{
-		for (int remove = x; remove > x - lenght; remove--)
-		{
-			gButtons[remove + y * 8].setRemoved(true);
-		}
-	}
-	else
-	{
-		for (int remove = y; remove > y - lenght; remove--)
-		{
-			gButtons[x + remove * 8].setRemoved(true);
-		}
-	}
-
-}
-
-void dropDownSquares()
-{
-	for (int x = 0; x < 8; x++)
-	{
-		// We go from the bottom up
-		for (int y = 7; y >= 0; y--)
-		{
-			// If the current square is empty, every square above it should fall one position
-			if (gButtons[x + y * 8].isRemoved())
-			{
-				for (int k = y - 1; k >= 0; k--)
-				{
-					gButtons[x + k * 8].setToUpdate(true);
-					gButtons[x + k * 8].updateY++;
-				}
-			}
-		}
-
-		// Now that each square has its new position in their updateY property,
-		// let's move them to that final position
-
-		for (int y = 7; y >= 0; y--)
-		{
-			bool testupdate = gButtons[x + y * 8].toUpdate();
-			bool testremoved = gButtons[x + y * 8].isRemoved();
-			// If the square is not empty and has to fall, move it to the new position
-			if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
-			{
-				int y0 = gButtons[x + y * 8].updateY;
-
-				//swap the piece with the respective empty space
-				gButtons[x + (y+y0) * 8].setType(gButtons[x + y * 8].getType());
-				gButtons[x + y * 8].setType(-1);
-				gButtons[x + y * 8].setRemoved(true);
-				gButtons[x + (y + y0) * 8].setRemoved(false);
-
-				//revert variables to default values
-				gButtons[x + y * 8].setToUpdate(false);
-				gButtons[x + (y + y0) * 8].setToUpdate(false);
-				gButtons[x + y * 8].updateY = 0;
-				gButtons[x + (y + y0) * 8].updateY = 0;
-			}
-		}
-
-		// Finally, let's count how many new empty spaces there are so we can fill
-		// them with new random gems
-		int emptySpaces = 0;
-
-		/*// We start counting from top to bottom. Once we find a square, we stop counting
-		for (int y = 0; y < 8; ++y)
-		{
-			if (!board[x][y].destroy)
-				break;
-
-			emptySpaces++;
-		}
-		
-		// Again from top to bottom, fill the emtpy squares, assigning them a
-		// proper position outta screen for the animation to work
-		for (int y = 0; y < 8; y++)
-		{
-			if (gButtons[x + y * 8].isRemoved())
-			{
-				gButtons[x + y * 8].setType(rand() % 5);
-				gButtons[x + y * 8].setRemoved(false);
-				gButtons[x + y * 8].updatePosition = false;
-				gButtons[x + y * 8].updateY = y;
-				/*board[x][y].x = x;
-				board[x][y].y = y;
-				board[x][y].updateY = y;
-				board[x][y].updatePosition = false;
-				board[x][y].destroy = false;
-			}
-		}*/
-	}
-}
+//bool isAdjacent(LButton *button0, LButton *button1)
+//{
+//	if (button1->getPosition().x == button0->getPosition().x + OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
+//		button1->getPosition().x == button0->getPosition().x - OFFSET_MULTIPLIER && button1->getPosition().y == button0->getPosition().y ||
+//		button1->getPosition().y == button0->getPosition().y + OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x ||
+//		button1->getPosition().y == button0->getPosition().y - OFFSET_MULTIPLIER && button1->getPosition().x == button0->getPosition().x)
+//	{
+//		return true;
+//	}
+//	else
+//	{
+//		return false;
+//	}
+//}
+//
+//void swapSquares()
+//{
+//	if (!isAdjacent(gPressedButtons[0], gPressedButtons[1]))
+//	{
+//		gPressedButtons[0]->setPressed(false);
+//		gPressedButtons[0] = gPressedButtons[1];
+//		pressedCount = 1;
+//		return;
+//	}
+//	else
+//	{
+//		int tempType;
+//		tempType = gPressedButtons[0]->getType();
+//		gPressedButtons[0]->setType(gPressedButtons[1]->getType());
+//		gPressedButtons[1]->setType(tempType);
+//		if(!checkSequence()) //if there's no sequence, revert the swap
+//		{
+//			tempType = gPressedButtons[0]->getType();
+//			gPressedButtons[0]->setType(gPressedButtons[1]->getType());
+//			gPressedButtons[1]->setType(tempType);
+//		}
+//		else
+//		{
+//			dropDownSquares();
+//			/*while (checkSequence())
+//			{
+//				dropDownSquares();
+//				
+//			}*/
+//		}
+//		gPressedButtons[0]->setPressed(false);
+//		gPressedButtons[1]->setPressed(false);
+//		pressedCount = 0;
+//	}
+//}
+//
+//bool checkSequence()
+//{
+//	bool sequenceFound = false;
+//
+//	// Checks for duplicates in rows
+//	int count = 0;
+//	int location = -1;
+//	int type = -2;
+//	for (int y = 0; y < 8; y++)
+//	{
+//		for (int x = 0; x < 8; x++)
+//		{
+//			if (x == 0 && gButtons[x + y * 8].getType() != -1)
+//			{
+//				type = gButtons[x + y * 8].getType();
+//				count = 1;
+//			}
+//			else
+//			{
+//				if (gButtons[x + y * 8].getType() == type && gButtons[x + y * 8].getType() != -1)
+//				{
+//					count++;
+//					if (count > 2) {
+//						location = x;
+//					}
+//				}
+//				else
+//				{
+//					if (count > 2 && gButtons[x + y * 8].getType() != -1) {
+//						removeSequence(location, y, count, 0);
+//						sequenceFound = true;
+//					}
+//					type = gButtons[x + y * 8].getType();
+//					count = 1;
+//				}
+//			}
+//			if (x == 7 && count > 2)
+//			{
+//				removeSequence(location, y, count, 0);
+//				sequenceFound = true;
+//			}
+//		}
+//	}
+//
+//	// Checks for duplicates in columns
+//	count = 0;
+//	location = -1;
+//	type = -2;
+//	for (int i = 0; i < 8; i++)
+//	{
+//		for (int j = 0; j < 8; j++)
+//		{
+//			if (j == 0 && gButtons[i + j * 8].getType() != -1)
+//			{
+//				type = gButtons[i + j * 8].getType();
+//				count = 1;
+//			}
+//			else
+//			{
+//				if (gButtons[i + j * 8].getType() == type && gButtons[i + j * 8].getType() != -1)
+//				{
+//					count++;
+//					if (count > 2) {
+//						location = j;
+//					}
+//				}
+//				else
+//				{
+//					if (count > 2 && gButtons[i + j * 8].getType() != -1) {
+//						removeSequence(i, location, count, 1);
+//						sequenceFound = true;
+//					}
+//					type = gButtons[i + j * 8].getType();
+//					count = 1;
+//				}
+//			}
+//			if (j == 7 && count > 2)
+//			{
+//				removeSequence(i, location, count, 1);
+//				sequenceFound = true;
+//			}
+//		}
+//	}
+//
+//	/*if (location != -1) {
+//		for (int remove = count; remove >= 0; remove--)
+//		{
+//			board[remove][square.y].destroy = true; // Removes the sequence
+//			sequenceFound = true;
+//		}
+//	}*/
+//	
+//	return sequenceFound;
+//}
+//
+////0 = horizontal; 1 = vertical
+//void removeSequence(int x, int y, int lenght, int orientation)
+//{
+//	if (orientation == 0)
+//	{
+//		for (int remove = x; remove > x - lenght; remove--)
+//		{
+//			gButtons[remove + y * 8].setRemoved(true);
+//		}
+//	}
+//	else
+//	{
+//		for (int remove = y; remove > y - lenght; remove--)
+//		{
+//			gButtons[x + remove * 8].setRemoved(true);
+//		}
+//	}
+//
+//}
+//
+//void dropDownSquares()
+//{
+//	for (int x = 0; x < 8; x++)
+//	{
+//		// We go from the bottom up
+//		for (int y = 7; y >= 0; y--)
+//		{
+//			// If the current square is empty, every square above it should fall one position
+//			if (gButtons[x + y * 8].isRemoved())
+//			{
+//				for (int k = y - 1; k >= 0; k--)
+//				{
+//					gButtons[x + k * 8].setToUpdate(true);
+//					gButtons[x + k * 8].updateY++;
+//				}
+//			}
+//		}
+//
+//		// Now that each square has its new position in their updateY property,
+//		// let's move them to that final position
+//
+//		for (int y = 7; y >= 0; y--)
+//		{
+//			bool testupdate = gButtons[x + y * 8].toUpdate();
+//			bool testremoved = gButtons[x + y * 8].isRemoved();
+//			// If the square is not empty and has to fall, move it to the new position
+//			if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
+//			{
+//				int y0 = gButtons[x + y * 8].updateY;
+//
+//				//swap the piece with the respective empty space
+//				gButtons[x + (y+y0) * 8].setType(gButtons[x + y * 8].getType());
+//				gButtons[x + y * 8].setType(-1);
+//				gButtons[x + y * 8].setRemoved(true);
+//				gButtons[x + (y + y0) * 8].setRemoved(false);
+//
+//				//revert variables to default values
+//				gButtons[x + y * 8].setToUpdate(false);
+//				gButtons[x + (y + y0) * 8].setToUpdate(false);
+//				gButtons[x + y * 8].updateY = 0;
+//				gButtons[x + (y + y0) * 8].updateY = 0;
+//			}
+//		}
+//
+//		// Finally, let's count how many new empty spaces there are so we can fill
+//		// them with new random gems
+//		int emptySpaces = 0;
+//
+//		/*// We start counting from top to bottom. Once we find a square, we stop counting
+//		for (int y = 0; y < 8; ++y)
+//		{
+//			if (!board[x][y].destroy)
+//				break;
+//
+//			emptySpaces++;
+//		}
+//		
+//		// Again from top to bottom, fill the emtpy squares, assigning them a
+//		// proper position outta screen for the animation to work
+//		for (int y = 0; y < 8; y++)
+//		{
+//			if (gButtons[x + y * 8].isRemoved())
+//			{
+//				gButtons[x + y * 8].setType(rand() % 5);
+//				gButtons[x + y * 8].setRemoved(false);
+//				gButtons[x + y * 8].updatePosition = false;
+//				gButtons[x + y * 8].updateY = y;
+//				/*board[x][y].x = x;
+//				board[x][y].y = y;
+//				board[x][y].updateY = y;
+//				board[x][y].updatePosition = false;
+//				board[x][y].destroy = false;
+//			}
+//		}*/
+//	}
+//}
 
 void close()
 {
@@ -508,9 +512,9 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
-			while (checkSequence())
+			while (game.checkSequence(gButtons))
 			{
-				dropDownSquares();
+				game.dropDownSquares(gButtons);
 				//generate new gems
 			}
 
@@ -529,7 +533,11 @@ int main(int argc, char* args[])
 					//Handle button events
 					for (int i = 0; i < TOTAL_BUTTONS; ++i)
 					{
-						gButtons[i].handleEvent(&e,gPressedButtons,pressedCount);
+						gButtons[i].handleEvent(&e,gPressedButtons);
+						if (pressedCount == 2)
+						{
+							game.swapSquares(gPressedButtons, gButtons);
+						}
 					}
 				}
 
@@ -543,39 +551,8 @@ int main(int argc, char* args[])
 					gButtons[i].render();
 				}
 
-				//Render buttons
-				/*for (int i = 0; i < TOTAL_BUTTONS; ++i)
-				{
-					if (gButtons[i].isRemoved())
-					{
-						gButtons[i].setType(-1); //will draw nothing (empty space)
-					}
-
-					switch (gButtons[i].getType())
-					{
-					case 0:
-						gButtons[i].render(gColor1SpriteSheetTexture, gColor1SpriteClips, gRenderer);
-						break;
-					case 1:
-						gButtons[i].render(gColor2SpriteSheetTexture, gColor2SpriteClips, gRenderer);
-						break;
-					case 2:
-						gButtons[i].render(gColor3SpriteSheetTexture, gColor3SpriteClips, gRenderer);
-						break;
-					case 3:
-						gButtons[i].render(gColor4SpriteSheetTexture, gColor4SpriteClips, gRenderer);
-						break;
-					case 4:
-						gButtons[i].render(gColor5SpriteSheetTexture, gColor5SpriteClips, gRenderer);
-						break;
-					default:
-						break;
-					}
-				}*/
-
 				//Update screen
 				SDL_RenderPresent(gRenderer);
-				//OutputDebugString(TEXT("screen updated\n"));
 			}
 		}
 	}

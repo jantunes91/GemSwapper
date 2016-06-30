@@ -14,3 +14,9 @@ LTexture gColor5SpriteSheetTexture;
 
 //The window renderer
 SDL_Renderer* gRenderer = NULL;
+
+//
+int pressedCount = 0;
+
+//Stores all the squares
+//class LButton gButtons[TOTAL_BUTTONS];

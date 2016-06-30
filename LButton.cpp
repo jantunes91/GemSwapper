@@ -63,8 +63,10 @@ bool LButton::toUpdate()
 	return updatePosition;
 }
 
-void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2], int pressedCount)
+void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2])
 {
+	bool toSwap = false;
+
 	//If mouse event happened
 	if (e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP)
 	{
@@ -115,19 +117,22 @@ void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2], int pressed
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
-				setPressed(true);
-				gPressedButtons[pressedCount] = this;
-				pressedCount++;
-				if (pressedCount == 2)
-				{
-					//swapSquares();
-					//pressedCount = 0;
-					if (!gPressedButtons[1]->pressed && !gPressedButtons[0]->pressed) {
-						OutputDebugString(TEXT("pressed a falso\n"));
+					mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
+					setPressed(true);
+					int temp = pressedCount;
+					gPressedButtons[pressedCount] = this;
+					pressedCount++;
+					temp = pressedCount;
+					if (pressedCount == 2)
+					{
+						toSwap = true;
+						//game.swapSquares(gPressedButtons[0], gPressedButtons[0], pressedCount);
+						//pressedCount = 0;
+						if (!gPressedButtons[1]->pressed && !gPressedButtons[0]->pressed) {
+							OutputDebugString(TEXT("pressed a falso\n"));
+						}
 					}
-				}
-				break;
+					break;
 
 				/*case SDL_MOUSEBUTTONUP:
 				mCurrentSprite = BUTTON_SPRITE_MOUSE_UP;
@@ -135,6 +140,7 @@ void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2], int pressed
 			}
 		}
 	}
+	//return toSwap;
 }
 
 void LButton::render()

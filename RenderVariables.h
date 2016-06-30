@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include "LTexture.h"
 #include "Constants.h"
+//#include "LButton.h"
 
 //Mouse button sprites
 extern SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
@@ -17,3 +18,9 @@ extern LTexture gColor5SpriteSheetTexture;
 
 //The window renderer
 extern SDL_Renderer* gRenderer;
+
+//
+extern int pressedCount;
+
+//Stores all the squares
+//extern class LButton gButtons[TOTAL_BUTTONS];
