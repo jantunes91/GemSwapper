@@ -9,121 +9,25 @@ and may not be redistributed without written permission.*/
 #include <string>
 #include <time.h>
 #include <Windows.h>
-
-//Screen dimension constants
-const int SCREEN_WIDTH = 1024;
-const int SCREEN_HEIGHT = 768;
-
-//Button constants
-const int BUTTON_WIDTH = 50;
-const int BUTTON_HEIGHT = 50;
-const int TOTAL_BUTTONS = 64;
-const int OFFSET_MULTIPLIER = 65;
-const int OFFSET_X = 400;
-const int OFFSET_Y = 100;
-const int MAX_SELECTED = 2;
+#include "Constants.h"
+#include "LButton.h"
+#include "LTexture.h"
+#include "Game.h"
+#include "RenderVariables.h"
 
 int pressedCount;
 
-enum LButtonSprite
-{
-	BUTTON_SPRITE_MOUSE_OUT = 0,
-	BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-	BUTTON_SPRITE_MOUSE_DOWN = 2,
-	//BUTTON_SPRITE_MOUSE_UP = 3,
-	BUTTON_SPRITE_TOTAL = 3
-};
-
-//Texture wrapper class
-class LTexture
-{
-public:
-	//Initializes variables
-	LTexture();
-
-	//Deallocates memory
-	~LTexture();
-
-	//Loads image at specified path
-	bool loadFromFile(std::string path);
-
-	//Deallocates texture
-	void free();
-
-	//Set color modulation
-	void setColor(Uint8 red, Uint8 green, Uint8 blue);
-
-	//Set blending
-	void setBlendMode(SDL_BlendMode blending);
-
-	//Set alpha modulation
-	void setAlpha(Uint8 alpha);
-
-	//Renders texture at given point
-	void render(int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
-
-	//Gets image dimensions
-	int getWidth();
-	int getHeight();
-
-private:
-	//The actual hardware texture
-	SDL_Texture* mTexture;
-
-	//Image dimensions
-	int mWidth;
-	int mHeight;
-};
-
-//The mouse button
-class LButton
-{
-public:
-	//Initializes internal variables
-	LButton();
-
-	//Sets top left position
-	void setPosition(int x, int y);
-
-	SDL_Point getPosition();
-
-	void setPressed(bool isPressed);
-
-	int getType();
-
-	void setType(int tempType);
-
-	void setRemoved(bool isRemoved);
-
-	bool isRemoved();
-
-	void setToUpdate(bool toUpdate);
-
-	bool toUpdate();
-
-	int updateY;
-
-	//Handles mouse event
-	void handleEvent(SDL_Event* e);
-
-	//Shows button sprite
-	void render();
-
-private:
-	//Top left position
-	SDL_Point mPosition;
-
-	//Currently used global sprite
-	LButtonSprite mCurrentSprite;
-
-	bool pressed;
-
-	int type;
-
-	bool removed;
-
-	bool updatePosition;
-};
+////Mouse button sprites
+//SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
+//SDL_Rect gColor2SpriteClips[BUTTON_SPRITE_TOTAL];
+//SDL_Rect gColor3SpriteClips[BUTTON_SPRITE_TOTAL];
+//SDL_Rect gColor4SpriteClips[BUTTON_SPRITE_TOTAL];
+//SDL_Rect gColor5SpriteClips[BUTTON_SPRITE_TOTAL];
+//LTexture gColor1SpriteSheetTexture;
+//LTexture gColor2SpriteSheetTexture;
+//LTexture gColor3SpriteSheetTexture;
+//LTexture gColor4SpriteSheetTexture;
+//LTexture gColor5SpriteSheetTexture;
 
 //Starts up SDL and creates window
 bool init();
@@ -149,303 +53,12 @@ void close();
 SDL_Window* gWindow = NULL;
 
 //The window renderer
-SDL_Renderer* gRenderer = NULL;
-
-//Mouse button sprites
-SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor2SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor3SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor4SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor5SpriteClips[BUTTON_SPRITE_TOTAL];
-LTexture gColor1SpriteSheetTexture;
-LTexture gColor2SpriteSheetTexture;
-LTexture gColor3SpriteSheetTexture;
-LTexture gColor4SpriteSheetTexture;
-LTexture gColor5SpriteSheetTexture;
+//SDL_Renderer* gRenderer = NULL;
 
 //Buttons objects
 LButton gButtons[TOTAL_BUTTONS];
 //Pressed Buttons
 LButton *gPressedButtons[2];
-
-LTexture::LTexture()
-{
-	//Initialize
-	mTexture = NULL;
-	mWidth = 0;
-	mHeight = 0;
-}
-
-LTexture::~LTexture()
-{
-	//Deallocate
-	free();
-}
-
-bool LTexture::loadFromFile(std::string path)
-{
-	//Get rid of preexisting texture
-	free();
-
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL)
-	{
-		printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
-	}
-	else
-	{
-		//Color key image
-		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
-
-		//Create texture from surface pixels
-		newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-		if (newTexture == NULL)
-		{
-			printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-		}
-		else
-		{
-			//Get image dimensions
-			mWidth = loadedSurface->w;
-			mHeight = loadedSurface->h;
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface(loadedSurface);
-	}
-
-	//Return success
-	mTexture = newTexture;
-	return mTexture != NULL;
-}
-
-void LTexture::free()
-{
-	//Free texture if it exists
-	if (mTexture != NULL)
-	{
-		SDL_DestroyTexture(mTexture);
-		mTexture = NULL;
-		mWidth = 0;
-		mHeight = 0;
-	}
-}
-
-void LTexture::setColor(Uint8 red, Uint8 green, Uint8 blue)
-{
-	//Modulate texture rgb
-	SDL_SetTextureColorMod(mTexture, red, green, blue);
-}
-
-void LTexture::setBlendMode(SDL_BlendMode blending)
-{
-	//Set blending function
-	SDL_SetTextureBlendMode(mTexture, blending);
-}
-
-void LTexture::setAlpha(Uint8 alpha)
-{
-	//Modulate texture alpha
-	SDL_SetTextureAlphaMod(mTexture, alpha);
-}
-
-void LTexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
-{
-	//Set rendering space and render to screen
-	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-	//Set clip rendering dimensions
-	if (clip != NULL)
-	{
-		renderQuad.w = clip->w;
-		renderQuad.h = clip->h;
-	}
-
-	//Render to screen
-	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
-}
-
-int LTexture::getWidth()
-{
-	return mWidth;
-}
-
-int LTexture::getHeight()
-{
-	return mHeight;
-}
-
-LButton::LButton()
-{
-	mPosition.x = OFFSET_X;
-	mPosition.y = OFFSET_Y;
-
-	mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
-	
-	type = rand() % 5;
-
-	removed = false;
-
-	updatePosition = false;
-	updateY = 0;
-}
-
-void LButton::setPosition(int x, int y)
-{
-	mPosition.x = x;
-	mPosition.y = y;
-}
-
-SDL_Point LButton::getPosition()
-{
-	return mPosition;
-}
-
-void LButton::setPressed(bool isPressed)
-{
-	pressed = isPressed;
-}
-
-int LButton::getType()
-{
-	return type;
-}
-
-void LButton::setType(int tempType)
-{
-	type = tempType;
-}
-
-void LButton::setRemoved(bool isRemoved)
-{
-	removed = isRemoved;
-}
-
-bool LButton::isRemoved()
-{
-	return removed;
-}
-
-void LButton::setToUpdate(bool toUpdate)
-{
-	updatePosition = toUpdate;
-}
-
-bool LButton::toUpdate()
-{
-	return updatePosition;
-}
-
-void LButton::handleEvent(SDL_Event* e)
-{
-	//If mouse event happened
-	if (e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP)
-	{
-		//Get mouse position
-		int x, y;
-		SDL_GetMouseState(&x, &y);
-
-		//Check if mouse is in button
-		bool inside = true;
-
-		//Mouse is left of the button
-		if (x < mPosition.x)
-		{
-			inside = false;
-		}
-		//Mouse is right of the button
-		else if (x > mPosition.x + BUTTON_WIDTH)
-		{
-			inside = false;
-		}
-		//Mouse above the button
-		else if (y < mPosition.y)
-		{
-			inside = false;
-		}
-		//Mouse below the button
-		else if (y > mPosition.y + BUTTON_HEIGHT)
-		{
-			inside = false;
-		}
-
-		//Mouse is outside button
-		if (!inside && !pressed)
-		{
-			mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
-		}
-		//Mouse is inside button
-		else
-		{
-			//Set mouse over sprite
-			switch (e->type)
-			{
-			case SDL_MOUSEMOTION:
-				if (!pressed)
-				{
-					mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
-				}
-				break;
-
-			case SDL_MOUSEBUTTONDOWN:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
-				setPressed(true);
-				gPressedButtons[pressedCount] = this;				
-				pressedCount++;
-				if (pressedCount == 2)
-				{
-					swapSquares();
-					//pressedCount = 0;
-					if (!gPressedButtons[1]->pressed && !gPressedButtons[0]->pressed) {
-						OutputDebugString(TEXT("pressed a falso\n"));
-					}
-				}
-				break;
-
-			/*case SDL_MOUSEBUTTONUP:
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_UP;
-				break;*/
-			}
-		}
-	}
-}
-
-void LButton::render()
-{
-	if (removed)
-	{
-		type = -1;
-	}
-	//Show current button sprite
-	if (type == 0)
-	{
-		gColor1SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor1SpriteClips[mCurrentSprite]);
-	}
-
-	if (type == 1)
-	{
-		gColor2SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor2SpriteClips[mCurrentSprite]);
-	}
-
-	if (type == 2)
-	{
-		gColor3SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor3SpriteClips[mCurrentSprite]);
-	}
-
-	if (type == 3)
-	{
-		gColor4SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor4SpriteClips[mCurrentSprite]);
-	}
-
-	if (type == 4)
-	{
-		gColor5SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor5SpriteClips[mCurrentSprite]);
-	}
-}
 
 bool init()
 {
@@ -507,7 +120,7 @@ bool loadMedia()
 	bool success = true;
 
 	//Load sprites for Color 1
-	if (!gColor1SpriteSheetTexture.loadFromFile("Images/color1sprite.png"))
+	if (!gColor1SpriteSheetTexture.loadFromFile("Images/color1sprite.png",gRenderer))
 	{
 		printf("Failed to load button sprite texture!\n");
 		success = false;
@@ -525,7 +138,7 @@ bool loadMedia()
 	}
 
 	//Load sprites for Color 2
-	if (!gColor2SpriteSheetTexture.loadFromFile("Images/color2sprite.png"))
+	if (!gColor2SpriteSheetTexture.loadFromFile("Images/color2sprite.png", gRenderer))
 	{
 		printf("Failed to load button sprite texture!\n");
 		success = false;
@@ -543,7 +156,7 @@ bool loadMedia()
 	}
 
 	//Load sprites for Color 3
-	if (!gColor3SpriteSheetTexture.loadFromFile("Images/color3sprite.png"))
+	if (!gColor3SpriteSheetTexture.loadFromFile("Images/color3sprite.png", gRenderer))
 	{
 		printf("Failed to load button sprite texture!\n");
 		success = false;
@@ -561,7 +174,7 @@ bool loadMedia()
 	}
 
 	//Load sprites for Color 4
-	if (!gColor4SpriteSheetTexture.loadFromFile("Images/color4sprite.png"))
+	if (!gColor4SpriteSheetTexture.loadFromFile("Images/color4sprite.png", gRenderer))
 	{
 		printf("Failed to load button sprite texture!\n");
 		success = false;
@@ -579,7 +192,7 @@ bool loadMedia()
 	}
 
 	//Load sprites for Color 5
-	if (!gColor5SpriteSheetTexture.loadFromFile("Images/color5sprite.png"))
+	if (!gColor5SpriteSheetTexture.loadFromFile("Images/color5sprite.png", gRenderer))
 	{
 		printf("Failed to load button sprite texture!\n");
 		success = false;
@@ -648,12 +261,12 @@ void swapSquares()
 		}
 		else
 		{
-			//bool test = true;
-			//while (test)
-			//{
+			dropDownSquares();
+			/*while (checkSequence())
+			{
 				dropDownSquares();
-				//checkSequence();
-			//}
+				
+			}*/
 		}
 		gPressedButtons[0]->setPressed(false);
 		gPressedButtons[1]->setPressed(false);
@@ -806,10 +419,13 @@ void dropDownSquares()
 			{
 				int y0 = gButtons[x + y * 8].updateY;
 
+				//swap the piece with the respective empty space
 				gButtons[x + (y+y0) * 8].setType(gButtons[x + y * 8].getType());
 				gButtons[x + y * 8].setType(-1);
 				gButtons[x + y * 8].setRemoved(true);
 				gButtons[x + (y + y0) * 8].setRemoved(false);
+
+				//revert variables to default values
 				gButtons[x + y * 8].setToUpdate(false);
 				gButtons[x + (y + y0) * 8].setToUpdate(false);
 				gButtons[x + y * 8].updateY = 0;
@@ -913,7 +529,7 @@ int main(int argc, char* args[])
 					//Handle button events
 					for (int i = 0; i < TOTAL_BUTTONS; ++i)
 					{
-						gButtons[i].handleEvent(&e);
+						gButtons[i].handleEvent(&e,gPressedButtons,pressedCount);
 					}
 				}
 
@@ -926,6 +542,36 @@ int main(int argc, char* args[])
 				{
 					gButtons[i].render();
 				}
+
+				//Render buttons
+				/*for (int i = 0; i < TOTAL_BUTTONS; ++i)
+				{
+					if (gButtons[i].isRemoved())
+					{
+						gButtons[i].setType(-1); //will draw nothing (empty space)
+					}
+
+					switch (gButtons[i].getType())
+					{
+					case 0:
+						gButtons[i].render(gColor1SpriteSheetTexture, gColor1SpriteClips, gRenderer);
+						break;
+					case 1:
+						gButtons[i].render(gColor2SpriteSheetTexture, gColor2SpriteClips, gRenderer);
+						break;
+					case 2:
+						gButtons[i].render(gColor3SpriteSheetTexture, gColor3SpriteClips, gRenderer);
+						break;
+					case 3:
+						gButtons[i].render(gColor4SpriteSheetTexture, gColor4SpriteClips, gRenderer);
+						break;
+					case 4:
+						gButtons[i].render(gColor5SpriteSheetTexture, gColor5SpriteClips, gRenderer);
+						break;
+					default:
+						break;
+					}
+				}*/
 
 				//Update screen
 				SDL_RenderPresent(gRenderer);

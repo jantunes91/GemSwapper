@@ -149,7 +149,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="LButton.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="LTexture.cpp" />
+    <ClCompile Include="RenderVariables.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="LButton.h" />
+    <ClInclude Include="LTexture.h" />
+    <ClInclude Include="RenderVariables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
