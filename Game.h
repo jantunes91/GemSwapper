@@ -29,5 +29,7 @@ public:
 	void removeSequence(int x, int y, int lenght, int orientation, LButton gButtons[TOTAL_BUTTONS]);
 
 	void dropDownSquares(LButton gButtons[TOTAL_BUTTONS]);
+
+	void generateNewSquares(LButton gButtons[TOTAL_BUTTONS]);
 };
 

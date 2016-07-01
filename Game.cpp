@@ -49,11 +49,12 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 		else
 		{
 			dropDownSquares(gButtons);
-			/*while (checkSequence())
+			generateNewSquares(gButtons);
+			while (checkSequence(gButtons))
 			{
-			dropDownSquares();
-
-			}*/
+				dropDownSquares(gButtons);
+				generateNewSquares(gButtons);
+			}
 		}
 		gPressedButtons[0]->setPressed(false);
 		gPressedButtons[1]->setPressed(false);
@@ -222,7 +223,7 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 
 		// Finally, let's count how many new empty spaces there are so we can fill
 		// them with new random gems
-		int emptySpaces = 0;
+		//int emptySpaces = 0;
 
 		/*// We start counting from top to bottom. Once we find a square, we stop counting
 		for (int y = 0; y < 8; ++y)
@@ -250,5 +251,22 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 		board[x][y].destroy = false;
 		}
 		}*/
+	}
+}
+
+void Game::generateNewSquares(LButton gButtons[TOTAL_BUTTONS])
+{
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			if (gButtons[x + y * 8].isRemoved())
+			{
+				gButtons[x + y * 8].setType(rand() % 5);
+				gButtons[x + y * 8].setRemoved(false);
+				gButtons[x + y * 8].setToUpdate(false);
+				gButtons[x + y * 8].updateY = y;
+			}
+		}
 	}
 }
