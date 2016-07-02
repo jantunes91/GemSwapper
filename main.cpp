@@ -84,7 +84,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Miniclip Challenge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL)
 		{
 			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -220,11 +220,31 @@ bool loadMedia()
 			for (int x = 0; x < 8; x++)
 			{
 				gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+				//gButtons[x + y * 8].updateY = y * OFFSET_MULTIPLIER + OFFSET_Y;
+				//gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, OFFSET_Y - OFFSET_MULTIPLIER);
+				//gButtons[x + y * 8].setToUpdate(true);
+				//gButtons[x + y * 8].fallPriority = 7 - y;
 			}
 		}
 	}
 
 	return success;
+}
+
+void render()
+{
+	//Clear screen
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+	//Render buttons
+	for (int i = 0; i < TOTAL_BUTTONS; ++i)
+	{
+		gButtons[i].render(); //change to render with animation
+	}
+
+	//Update screen
+	SDL_RenderPresent(gRenderer);
 }
 
 void close()
@@ -269,11 +289,15 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
+
+			//plays the initial animation
+			//render board
+
 			while (game.checkSequence(gButtons))
 			{
 				game.dropDownSquares(gButtons);
 				game.generateNewSquares(gButtons);
-				//generate new gems
+				//render board
 			}
 
 			//While application is running
@@ -299,18 +323,7 @@ int main(int argc, char* args[])
 					}
 				}
 
-				//Clear screen
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-				SDL_RenderClear(gRenderer);
-
-				//Render buttons
-				for (int i = 0; i < TOTAL_BUTTONS; ++i)
-				{
-					gButtons[i].render();
-				}
-
-				//Update screen
-				SDL_RenderPresent(gRenderer);
+				render();
 			}
 		}
 	}

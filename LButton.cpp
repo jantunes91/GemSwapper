@@ -14,7 +14,8 @@ LButton::LButton()
 	removed = false;
 
 	updatePosition = false;
-	updateY = 0;
+	destY = 0;
+	destX = 0;
 }
 
 void LButton::setPosition(int x, int y)

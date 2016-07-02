@@ -47,13 +47,24 @@ public:
 
 	bool toUpdate();
 
-	int updateY;
+	//replace by SDL_Point origin
+	int origX;
+
+	int origY;
+
+	//replace by SDL_Point destiny
+	int destX;
+
+	int destY;
 
 	//Handles mouse event
 	void handleEvent(SDL_Event* e, LButton* gPressedButtons[2]);
 
 	//Shows button sprite
 	void render();
+
+	//Stores the priority at which the button should fall
+	int fallPriority;
 
 
 private:

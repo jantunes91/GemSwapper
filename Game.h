@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include "LButton.h"
 #include "RenderVariables.h"
+#include "Animation.h"
 
 class Game
 {
