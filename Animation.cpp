@@ -17,7 +17,7 @@ void Animation::rect_lerp(LButton *button, float f) {
 		(float)button->origY * t + (float)button->destY * f);
 }
 
-void Animation::swapSquaresAnim(LButton *gPressedButtons[2])
+void Animation::swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS])
 {
 	//set the correct origin point values
 	gPressedButtons[0]->origX = gPressedButtons[0]->getPosition().x;
@@ -45,9 +45,11 @@ void Animation::swapSquaresAnim(LButton *gPressedButtons[2])
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
-		//Render buttons TODO Render ALL the buttons
-		gPressedButtons[0]->render();
-		gPressedButtons[1]->render();
+		//Render buttons
+		for (int i = 0; i < TOTAL_BUTTONS; ++i)
+		{
+			gButtons[i].render(); //change to render with animation
+		}
 
 		//Update screen
 		SDL_RenderPresent(gRenderer);

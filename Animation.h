@@ -13,7 +13,7 @@ public:
 	void rect_lerp(LButton *button, float f);
 	
 	//handles the swap animation between two squares
-	void swapSquaresAnim(LButton *gPressedButtons[2]);
+	void swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS]);
 
 	bool animate(Uint32 tcurrent, LButton* button);
 

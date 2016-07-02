@@ -42,7 +42,7 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 		int button0type = gPressedButtons[0]->getType();
 		int button1type = gPressedButtons[1]->getType();
 
-		anim.swapSquaresAnim(gPressedButtons);
+		anim.swapSquaresAnim(gPressedButtons, gButtons);
 		
 		//swap the types
 		gPressedButtons[0]->setType(button1type);
@@ -58,7 +58,7 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 			button0type = gPressedButtons[0]->getType();
 			button1type = gPressedButtons[1]->getType();
 
-			anim.swapSquaresAnim(gPressedButtons);
+			anim.swapSquaresAnim(gPressedButtons, gButtons);
 
 			//swap the types
 			gPressedButtons[0]->setType(button1type);

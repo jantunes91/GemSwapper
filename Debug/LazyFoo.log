@@ -1,2 +1,7 @@
 ﻿  Game.cpp
+  Animation.cpp
+c:\users\antunes\documents\visual studio 2015\projects\lazyfoo\lazyfoo\animation.cpp(17): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
   LazyFoo.vcxproj -> C:\Users\Antunes\Documents\Visual Studio 2015\Projects\LazyFoo\Debug\LazyFoo.exe
