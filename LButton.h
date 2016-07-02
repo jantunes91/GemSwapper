@@ -57,6 +57,9 @@ public:
 
 	int destY;
 
+	//stores how many places to drop
+	int updateDrop;
+
 	//Handles mouse event
 	void handleEvent(SDL_Event* e, LButton* gPressedButtons[2]);
 

@@ -296,7 +296,7 @@ int main(int argc, char* args[])
 			while (game.checkSequence(gButtons))
 			{
 				game.dropDownSquares(gButtons);
-				game.generateNewSquares(gButtons);
+				//game.generateNewSquares(gButtons);
 				//render board
 			}
 

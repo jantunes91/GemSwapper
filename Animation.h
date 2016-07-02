@@ -22,6 +22,6 @@ private:
 	///Uint32 animation_start_time;
 
 	//whole animation will play in 0.3 s
-	const Uint32 animation_time_total = 3000;
+	const Uint32 animation_time_total = 300;
 };
 

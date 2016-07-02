@@ -70,7 +70,7 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 		else
 		{
 			dropDownSquares(gButtons);
-			generateNewSquares(gButtons);
+			//generateNewSquares(gButtons);
 			/*while (checkSequence(gButtons))
 			{
 				dropDownSquares(gButtons);
@@ -212,7 +212,7 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 				for (int k = y - 1; k >= 0; k--)
 				{
 					gButtons[x + k * 8].setToUpdate(true);
-					gButtons[x + k * 8].destY++;
+					gButtons[x + k * 8].updateDrop++;
 				}
 			}
 		}
@@ -225,7 +225,7 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 			// If the square is not empty and has to fall, move it to the new position
 			if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
 			{
-				int y0 = gButtons[x + y * 8].destY;
+				int y0 = gButtons[x + y * 8].updateDrop;
 
 				//swap the piece with the respective empty space
 				gButtons[x + (y + y0) * 8].setType(gButtons[x + y * 8].getType());
@@ -236,8 +236,8 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 				//revert variables to default values
 				gButtons[x + y * 8].setToUpdate(false);
 				gButtons[x + (y + y0) * 8].setToUpdate(false);
-				gButtons[x + y * 8].destY = 0;
-				gButtons[x + (y + y0) * 8].destY = 0;
+				gButtons[x + y * 8].updateDrop = 0;
+				gButtons[x + (y + y0) * 8].updateDrop = 0;
 			}
 		}
 
