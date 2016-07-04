@@ -148,7 +148,8 @@ void LButton::render()
 {
 	if (removed)
 	{
-		type = -1;
+		return;
+		//type = -1;
 	}
 	//Show current button sprite
 	if (type == 0)

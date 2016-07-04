@@ -69,6 +69,7 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 		}
 		else
 		{
+			//anim.sequenceRemoveAnim(gButtons);
 			dropDownSquares(gButtons);
 			//generateNewSquares(gButtons);
 			/*while (checkSequence(gButtons))
@@ -168,13 +169,7 @@ bool Game::checkSequence(LButton gButtons[TOTAL_BUTTONS])
 		}
 	}
 
-	/*if (location != -1) {
-	for (int remove = count; remove >= 0; remove--)
-	{
-	board[remove][square.y].destroy = true; // Removes the sequence
-	sequenceFound = true;
-	}
-	}*/
+	anim.sequenceRemoveAnim(gButtons);
 
 	return sequenceFound;
 }
@@ -216,30 +211,79 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 				}
 			}
 		}
+	}
 
-		// Now that each square has its new position in their updateY property,
-		// let's move them to that final position
-
+	// Now that each square has its new position in their updateDrop property,
+	// let's set the correct variables for the animation process
+	for (int x = 0; x < 8; x++)
+	{
 		for (int y = 7; y >= 0; y--)
 		{
-			// If the square is not empty and has to fall, move it to the new position
+			// If the square is not empty and has to fall
 			if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
 			{
 				int y0 = gButtons[x + y * 8].updateDrop;
 
-				//swap the piece with the respective empty space
+				//set the variables for the animation process
+				gButtons[x + y * 8].origX = gButtons[x + y * 8].getPosition().x;
+				gButtons[x + y * 8].origY = gButtons[x + y * 8].getPosition().y;
+				gButtons[x + y * 8].destX = gButtons[x + y * 8].getPosition().x; //only moves in Y
+				gButtons[x + y * 8].destY = (y + y0) * OFFSET_MULTIPLIER + OFFSET_Y;
+
+			}
+		}
+	}
+
+	bool animationDone = false;
+	int tcurrent = SDL_GetTicks();
+	//play the animations till they're all finished
+	while (!animationDone)
+	{
+		animationDone = true;
+		for (int x = 0; x < 8; x++)
+		{
+			for (int y = 7; y >= 0; y--)
+			{
+				// If the square is not empty and has to fall
+				if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
+				{
+					//updates the animation and computes if all the animations are done
+					animationDone = animationDone & anim.animate(tcurrent, 150 * gButtons[x + y * 8].updateDrop, &gButtons[x + y * 8]);
+				}
+			}
+		}
+		if (!animationDone)
+		{
+			anim.render(gButtons);
+		}
+	}
+	
+	//fix the positions and types
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 7; y >= 0; y--)
+		{
+			// If the square is not empty and has to fall
+			if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
+			{
+				int y0 = gButtons[x + y * 8].updateDrop;
+				////swap the piece with the respective empty space
 				gButtons[x + (y + y0) * 8].setType(gButtons[x + y * 8].getType());
 				gButtons[x + y * 8].setType(-1);
 				gButtons[x + y * 8].setRemoved(true);
 				gButtons[x + (y + y0) * 8].setRemoved(false);
 
-				//revert variables to default values
+				////fix the position
+				gButtons[x + y * 8].setPosition(gButtons[x + y * 8].origX, gButtons[x + y * 8].origY);
+
+				////revert variables to default values
 				gButtons[x + y * 8].setToUpdate(false);
 				gButtons[x + (y + y0) * 8].setToUpdate(false);
 				gButtons[x + y * 8].updateDrop = 0;
 				gButtons[x + (y + y0) * 8].updateDrop = 0;
 			}
 		}
+	}
 
 		// Finally, let's count how many new empty spaces there are so we can fill
 		// them with new random gems
@@ -271,7 +315,6 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 		board[x][y].destroy = false;
 		}
 		}*/
-	}
 }
 
 void Game::generateNewSquares(LButton gButtons[TOTAL_BUTTONS])

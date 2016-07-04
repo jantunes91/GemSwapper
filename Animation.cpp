@@ -1,6 +1,7 @@
 #include "Animation.h"
 
-
+#define SWAP_ANIMATION_TIME 300
+#define COLUMN_DROP_ANIMATION_TIME 1000
 
 Animation::Animation()
 {
@@ -38,25 +39,68 @@ void Animation::swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TO
 
 	while (!animation0Done && !animation1Done)
 	{
-		animation0Done = animate(tcurrent, gPressedButtons[0]);
-		animation1Done = animate(tcurrent, gPressedButtons[1]);
+		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[0]);
+		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[1]);
 
-		//Clear screen
-		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(gRenderer);
-
-		//Render buttons
-		for (int i = 0; i < TOTAL_BUTTONS; ++i)
-		{
-			gButtons[i].render(); //change to render with animation
-		}
-
-		//Update screen
-		SDL_RenderPresent(gRenderer);
+		render(gButtons);
 	}
 }
 
-bool Animation::animate(Uint32 animation_start_time, LButton* button)
+void Animation::sequenceRemoveAnim(LButton gButtons[TOTAL_BUTTONS])
+{
+	bool removed[TOTAL_BUTTONS];
+
+	//store the previous values of the buttons' removed flag
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			removed[x + y * 8] = gButtons[x + y * 8].isRemoved();
+		}
+	}
+
+	//alternate removed between true and false 4 times. this will cause the square to flash 4 times
+	for (int i = 0; i < 4; i++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			for (int x = 0; x < 8; x++)
+			{
+				if (removed[x + y * 8])
+				{
+					if (gButtons[x + y * 8].isRemoved())
+					{
+						gButtons[x + y * 8].setRemoved(false);
+					}
+					else
+					{
+						gButtons[x + y * 8].setRemoved(true);
+					}
+				}
+			}
+		}
+		SDL_Delay(100);
+		render(gButtons);
+	}
+}
+
+void Animation::render(LButton gButtons[TOTAL_BUTTONS])
+{
+	//Clear screen
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
+
+	//Render buttons
+	for (int i = 0; i < TOTAL_BUTTONS; ++i)
+	{
+		gButtons[i].render(); //change to render with animation
+	}
+
+	//Update screen
+	SDL_RenderPresent(gRenderer);
+}
+
+bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total, LButton* button)
 {
 	Uint32 tcurrent = SDL_GetTicks();
 	if (tcurrent > animation_start_time + animation_time_total) {

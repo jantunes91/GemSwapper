@@ -15,13 +15,11 @@ public:
 	//handles the swap animation between two squares
 	void swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS]);
 
-	bool animate(Uint32 tcurrent, LButton* button);
+	void sequenceRemoveAnim(LButton gButtons[TOTAL_BUTTONS]);
 
-private:
-	//stores the animation start time
-	///Uint32 animation_start_time;
+	//renders the board
+	void render(LButton gButtons[TOTAL_BUTTONS]);
 
-	//whole animation will play in 0.3 s
-	const Uint32 animation_time_total = 300;
+	bool animate(Uint32 animation_start_time, Uint32 animation_time_total, LButton* button);
 };
 
