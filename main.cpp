@@ -220,10 +220,13 @@ bool loadMedia()
 			for (int x = 0; x < 8; x++)
 			{
 				gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+				//gButtons[x + y * 8].origX = gButtons[x + y * 8].getPosition().x;
+				//gButtons[x + y * 8].origY = (y-8) * OFFSET_MULTIPLIER + OFFSET_Y;
+				//gButtons[x + y * 8].destX = gButtons[x + y * 8].getPosition().x;
+				//gButtons[x + y * 8].destY = gButtons[x + y * 8].getPosition().y;
 				//gButtons[x + y * 8].updateY = y * OFFSET_MULTIPLIER + OFFSET_Y;
 				//gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, OFFSET_Y - OFFSET_MULTIPLIER);
 				//gButtons[x + y * 8].setToUpdate(true);
-				//gButtons[x + y * 8].fallPriority = 7 - y;
 			}
 		}
 	}
@@ -290,14 +293,11 @@ int main(int argc, char* args[])
 			SDL_Event e;
 
 
-			//plays the initial animation
-			//render board
+			//game.dropDownSquares(gButtons);
 
 			while (game.checkSequence(gButtons))
 			{
 				game.dropDownSquares(gButtons);
-				//game.generateNewSquares(gButtons);
-				//render board
 			}
 
 			//While application is running
