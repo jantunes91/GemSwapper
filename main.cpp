@@ -13,38 +13,13 @@ and may not be redistributed without written permission.*/
 #include "LButton.h"
 #include "LTexture.h"
 #include "Game.h"
-#include "RenderVariables.h"
-
-//int pressedCount;
-
-////Mouse button sprites
-//SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
-//SDL_Rect gColor2SpriteClips[BUTTON_SPRITE_TOTAL];
-//SDL_Rect gColor3SpriteClips[BUTTON_SPRITE_TOTAL];
-//SDL_Rect gColor4SpriteClips[BUTTON_SPRITE_TOTAL];
-//SDL_Rect gColor5SpriteClips[BUTTON_SPRITE_TOTAL];
-//LTexture gColor1SpriteSheetTexture;
-//LTexture gColor2SpriteSheetTexture;
-//LTexture gColor3SpriteSheetTexture;
-//LTexture gColor4SpriteSheetTexture;
-//LTexture gColor5SpriteSheetTexture;
+#include "Variables.h"
 
 //Starts up SDL and creates window
 bool init();
 
 //Loads media
 bool loadMedia();
-
-////Swaps two squares
-//void swapSquares();
-//
-////Checks if there's a sequence and removes it from the board
-//bool checkSequence();
-//
-////Removes a previously found sequence, given it's end and it's lenght
-//void removeSequence(int x, int y, int lenght, int orientation);
-//
-//void dropDownSquares();
 
 //Frees media and shuts down SDL
 void close();
@@ -73,61 +48,71 @@ bool init()
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-		success = false;
+		return false;
 	}
-	else
+	//Set texture filtering to linear
+	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 	{
-		//Set texture filtering to linear
-		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-		{
-			printf("Warning: Linear texture filtering not enabled!");
-		}
-
-		//Create window
-		gWindow = SDL_CreateWindow("Miniclip Challenge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-		if (gWindow == NULL)
-		{
-			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
-			success = false;
-		}
-		else
-		{
-			//Create vsynced renderer for window
-			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-			if (gRenderer == NULL)
-			{
-				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-				success = false;
-			}
-			else
-			{
-				//Initialize renderer color
-				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-				//Initialize PNG loading
-				int imgFlags = IMG_INIT_PNG;
-				if (!(IMG_Init(imgFlags) & imgFlags))
-				{
-					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-					success = false;
-				}
-			}
-		}
+		printf("Warning: Linear texture filtering not enabled!");
 	}
 
-	return success;
+	//Create window
+	gWindow = SDL_CreateWindow("Miniclip Challenge", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	if (gWindow == NULL)
+	{
+		printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	//Create vsynced renderer for window
+	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	if (gRenderer == NULL)
+	{
+		printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	//Initialize renderer color
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+
+	//Initialize PNG loading
+	int imgFlags = IMG_INIT_PNG;
+	if (!(IMG_Init(imgFlags) & imgFlags))
+	{
+		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		return false;
+	}
+
+	//Initialize SDL_mixer
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		printf("SDL_Mixer could not initialize! SDL_Mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
+	return true;
 }
 
 bool loadMedia()
 {
-	//Loading success flag
-	bool success = true;
+	//Load background image
+	if (!backgroundTexture.loadFromFile("Images/background.png", gRenderer))
+	{
+		printf("Failed to load background texture!\n");
+		return false;
+	}
+	else
+	{
+		//Set where to render
+		backgroundClip.h = SCREEN_HEIGHT;
+		backgroundClip.w = SCREEN_WIDTH;
+	}
 
 	//Load sprites for Color 1
 	if (!gColor1SpriteSheetTexture.loadFromFile("Images/color1sprite.png",gRenderer))
 	{
-		printf("Failed to load button sprite texture!\n");
-		success = false;
+		printf("Failed to load color 1 sprite texture!\n");
+		return false;
 	}
 	else
 	{
@@ -144,8 +129,8 @@ bool loadMedia()
 	//Load sprites for Color 2
 	if (!gColor2SpriteSheetTexture.loadFromFile("Images/color2sprite.png", gRenderer))
 	{
-		printf("Failed to load button sprite texture!\n");
-		success = false;
+		printf("Failed to load color 2 sprite texture!\n");
+		return false;
 	}
 	else
 	{
@@ -162,8 +147,8 @@ bool loadMedia()
 	//Load sprites for Color 3
 	if (!gColor3SpriteSheetTexture.loadFromFile("Images/color3sprite.png", gRenderer))
 	{
-		printf("Failed to load button sprite texture!\n");
-		success = false;
+		printf("Failed to load color 3 sprite texture!\n");
+		return false;
 	}
 	else
 	{
@@ -180,8 +165,8 @@ bool loadMedia()
 	//Load sprites for Color 4
 	if (!gColor4SpriteSheetTexture.loadFromFile("Images/color4sprite.png", gRenderer))
 	{
-		printf("Failed to load button sprite texture!\n");
-		success = false;
+		printf("Failed to load color 4 sprite texture!\n");
+		return false;
 	}
 	else
 	{
@@ -198,8 +183,8 @@ bool loadMedia()
 	//Load sprites for Color 5
 	if (!gColor5SpriteSheetTexture.loadFromFile("Images/color5sprite.png", gRenderer))
 	{
-		printf("Failed to load button sprite texture!\n");
-		success = false;
+		printf("Failed to load color 5 sprite texture!\n");
+		return false;
 	}
 	else
 	{
@@ -213,25 +198,41 @@ bool loadMedia()
 		}
 	}
 
+	//Load the music
+	music = Mix_LoadMUS("Sounds/music.wav");
 
-	if (success) {
-		for (int y = 0; y < 8; y++)
+	//If there was a problem loading the music
+	if (music == NULL)
+	{
+		printf("Failed to load the background music!\n");
+		return false;
+	}
+
+	//Load the sound effects
+	selectSquare = Mix_LoadWAV("Sounds/select.wav");
+	sequence1 = Mix_LoadWAV("Sounds/sequence1.wav");
+	sequence2 = Mix_LoadWAV("Sounds/sequence2.wav");
+	sequence3 = Mix_LoadWAV("Sounds/sequence3.wav");
+
+	//If there was a problem loading the sound effects
+	if ((sequence1 == NULL) || (sequence2 == NULL) || (sequence3 == NULL) || (selectSquare == NULL))
+	{
+		printf("Failed to load the sound effects!\n");
+		return false;
+	}
+
+	//Sets the correct positions for the squares
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
 		{
-			for (int x = 0; x < 8; x++)
-			{
-				gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
-				//gButtons[x + y * 8].origX = gButtons[x + y * 8].getPosition().x;
-				//gButtons[x + y * 8].origY = (y-8) * OFFSET_MULTIPLIER + OFFSET_Y;
-				//gButtons[x + y * 8].destX = gButtons[x + y * 8].getPosition().x;
-				//gButtons[x + y * 8].destY = gButtons[x + y * 8].getPosition().y;
-				//gButtons[x + y * 8].updateY = y * OFFSET_MULTIPLIER + OFFSET_Y;
-				//gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, OFFSET_Y - OFFSET_MULTIPLIER);
-				//gButtons[x + y * 8].setToUpdate(true);
-			}
+			gButtons[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+			gButtons[x + y * 8].destX = gButtons[x + y * 8].getPosition().x;
+			gButtons[x + y * 8].destY = gButtons[x + y * 8].getPosition().y;
 		}
 	}
 
-	return success;
+	return true;
 }
 
 void render()
@@ -240,10 +241,13 @@ void render()
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
+	//Render background
+	backgroundTexture.render(0, 0, &backgroundClip);
+
 	//Render buttons
 	for (int i = 0; i < TOTAL_BUTTONS; ++i)
 	{
-		gButtons[i].render(); //change to render with animation
+		gButtons[i].render();
 	}
 
 	//Update screen
@@ -258,6 +262,14 @@ void close()
 	gColor3SpriteSheetTexture.free();
 	gColor4SpriteSheetTexture.free();
 	gColor5SpriteSheetTexture.free();
+	backgroundTexture.free();
+
+	//Free loaded sounds
+	Mix_FreeMusic(music);
+	Mix_FreeChunk(sequence1);
+	Mix_FreeChunk(sequence2);
+	Mix_FreeChunk(sequence3);
+	Mix_FreeChunk(selectSquare);
 
 	//Destroy window	
 	SDL_DestroyRenderer(gRenderer);
@@ -267,6 +279,7 @@ void close()
 
 	//Quit SDL subsystems
 	IMG_Quit();
+	Mix_CloseAudio();
 	SDL_Quit();
 }
 
@@ -292,13 +305,23 @@ int main(int argc, char* args[])
 			//Event handler
 			SDL_Event e;
 
+			//render the initial board
+			render();
 
-			//game.dropDownSquares(gButtons);
+			//play the background music on loop
+			Mix_PlayMusic(music, -1);
 
+			//this delay is just for eventual sequences on the initial
+			//board to not vanish right when we load the game
+			SDL_Delay(500);
+
+			//clear initial sequences and drop new squares
+			//loop only stops when there's no more sequences to clear
 			while (game.checkSequence(gButtons))
 			{
 				game.dropDownSquares(gButtons);
 			}
+			game.multiplier = 1;
 
 			//While application is running
 			while (!quit)

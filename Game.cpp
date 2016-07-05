@@ -4,6 +4,8 @@ Animation anim;
 
 Game::Game()
 {
+	score = 0;
+	multiplier = 0;
 }
 
 
@@ -41,12 +43,14 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 		SDL_Point button1Position = gPressedButtons[1]->getPosition();
 		int button0type = gPressedButtons[0]->getType();
 		int button1type = gPressedButtons[1]->getType();
-
-		anim.swapSquaresAnim(gPressedButtons, gButtons);
 		
 		//swap the types
 		gPressedButtons[0]->setType(button1type);
 		gPressedButtons[1]->setType(button0type);
+
+		//animate the swap
+		anim.swapSquaresAnim(gPressedButtons, gButtons);
+
 		//swap the positions
 		gPressedButtons[0]->setPosition(button0Position.x, button0Position.y);
 		gPressedButtons[1]->setPosition(button1Position.x, button1Position.y);
@@ -58,26 +62,26 @@ void Game::swapSquares(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTO
 			button0type = gPressedButtons[0]->getType();
 			button1type = gPressedButtons[1]->getType();
 
-			anim.swapSquaresAnim(gPressedButtons, gButtons);
-
 			//swap the types
 			gPressedButtons[0]->setType(button1type);
 			gPressedButtons[1]->setType(button0type);
+
+			//animate the swap
+			anim.swapSquaresAnim(gPressedButtons, gButtons);
+
 			//swap the positions
 			gPressedButtons[0]->setPosition(button0Position.x, button0Position.y);
 			gPressedButtons[1]->setPosition(button1Position.x, button1Position.y);
 		}
 		else
 		{
-			//anim.sequenceRemoveAnim(gButtons);
 			dropDownSquares(gButtons);
-			//generateNewSquares(gButtons);
 			while (checkSequence(gButtons))
 			{
 				dropDownSquares(gButtons);
-				//generateNewSquares(gButtons);
 			}
 		}
+		multiplier = 1;
 		gPressedButtons[0]->setPressed(false);
 		gPressedButtons[1]->setPressed(false);
 		pressedCount = 0;
@@ -115,6 +119,7 @@ bool Game::checkSequence(LButton gButtons[TOTAL_BUTTONS])
 				{
 					if (count > 2 && gButtons[x + y * 8].getType() != -1) {
 						removeSequence(location, y, count, 0, gButtons);
+						calculateScore(count);
 						sequenceFound = true;
 					}
 					type = gButtons[x + y * 8].getType();
@@ -124,6 +129,7 @@ bool Game::checkSequence(LButton gButtons[TOTAL_BUTTONS])
 			if (x == 7 && count > 2)
 			{
 				removeSequence(location, y, count, 0, gButtons);
+				calculateScore(count);
 				sequenceFound = true;
 			}
 		}
@@ -155,6 +161,7 @@ bool Game::checkSequence(LButton gButtons[TOTAL_BUTTONS])
 				{
 					if (count > 2 && gButtons[i + j * 8].getType() != -1) {
 						removeSequence(i, location, count, 1, gButtons);
+						calculateScore(count);
 						sequenceFound = true;
 					}
 					type = gButtons[i + j * 8].getType();
@@ -164,12 +171,16 @@ bool Game::checkSequence(LButton gButtons[TOTAL_BUTTONS])
 			if (j == 7 && count > 2 && gButtons[i + j * 8].getType() != -1)
 			{
 				removeSequence(i, location, count, 1, gButtons);
+				calculateScore(count);
 				sequenceFound = true;
 			}
 		}
 	}
 
-	anim.sequenceRemoveAnim(gButtons);
+	if (sequenceFound)
+	{
+		anim.sequenceRemoveAnim(gButtons);
+	}
 
 	return sequenceFound;
 }
@@ -192,6 +203,42 @@ void Game::removeSequence(int x, int y, int lenght, int orientation, LButton gBu
 		}
 	}
 
+	//play the correct sound
+	switch (multiplier)
+	{
+	case 1:
+		Mix_PlayChannel(-1, sequence1, 0);
+		break;
+	case 2:
+		Mix_PlayChannel(-1, sequence2, 0);
+		break;
+	default:
+		Mix_PlayChannel(-1, sequence3, 0);
+		break;
+	}
+}
+
+void Game::calculateScore(int lenght)
+{
+	switch (lenght)
+	{
+	case 3:
+		score = score + 50 * multiplier;
+	case 4:
+		score = score + 150 * multiplier;
+	case 5:
+		score = score + 500 * multiplier;
+	case 6:
+		score = score + 1000 * multiplier;
+	case 7:
+		score = score + 2500 * multiplier;
+	case 8:
+		score = score + 5000 * multiplier;
+	default:
+		break;
+	}
+
+	multiplier++;
 }
 
 void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
@@ -236,7 +283,7 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 
 				//set the variables for the animation process on the origin position for a new piece to fall
 				gButtons[x + y * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
-				gButtons[x + y * 8].origY = -1 * OFFSET_MULTIPLIER + OFFSET_Y;
+				gButtons[x + y * 8].origY = newSquareOffset * OFFSET_MULTIPLIER + OFFSET_Y;
 				gButtons[x + y * 8].destX = x * OFFSET_MULTIPLIER + OFFSET_X;
 				gButtons[x + y * 8].destY = y * OFFSET_MULTIPLIER + OFFSET_Y;
 				gButtons[x + y * 8].updateDrop = -newSquareOffset;
@@ -271,7 +318,7 @@ void Game::dropDownSquares(LButton gButtons[TOTAL_BUTTONS])
 				if (gButtons[x + y * 8].toUpdate() == true && gButtons[x + y * 8].isRemoved() == false)
 				{
 					//updates the animation and computes if all the animations are done
-					animationDone = animationDone & anim.animate(tcurrent, 2000, &gButtons[x + y * 8]);
+					animationDone = animationDone & anim.animate(tcurrent, 200, &gButtons[x + y * 8]);
 				}
 			}
 		}

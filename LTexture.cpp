@@ -1,5 +1,5 @@
 #include "LTexture.h"
-#include "RenderVariables.h"
+#include "Variables.h"
 
 LTexture::LTexture()
 {

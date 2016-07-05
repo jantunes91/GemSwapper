@@ -7,7 +7,7 @@
 #include <time.h>
 #include <Windows.h>
 #include "LButton.h"
-#include "RenderVariables.h"
+#include "Variables.h"
 #include "Animation.h"
 
 class Game
@@ -29,8 +29,14 @@ public:
 	//Removes a previously found sequence, given it's end and it's lenght
 	void removeSequence(int x, int y, int lenght, int orientation, LButton gButtons[TOTAL_BUTTONS]);
 
+	void calculateScore(int lenght);
+
 	void dropDownSquares(LButton gButtons[TOTAL_BUTTONS]);
 
 	void generateNewSquares(LButton gButtons[TOTAL_BUTTONS]);
+
+	int score;
+
+	int multiplier;
 };
 

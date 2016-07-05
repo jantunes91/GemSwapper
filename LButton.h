@@ -3,6 +3,7 @@
 //Using SDL, SDL_image, standard IO, and strings
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -10,7 +11,7 @@
 #include <Windows.h>
 #include "LTexture.h"
 #include "Constants.h"
-#include "RenderVariables.h"
+#include "Variables.h"
 
 
 enum LButtonSprite

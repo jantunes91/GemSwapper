@@ -21,15 +21,15 @@ void Animation::rect_lerp(LButton *button, float f) {
 void Animation::swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS])
 {
 	//set the correct origin point values
-	gPressedButtons[0]->origX = gPressedButtons[0]->getPosition().x;
-	gPressedButtons[0]->origY = gPressedButtons[0]->getPosition().y;
-	gPressedButtons[1]->origX = gPressedButtons[1]->getPosition().x;
-	gPressedButtons[1]->origY = gPressedButtons[1]->getPosition().y;
+	gPressedButtons[0]->origX = gPressedButtons[1]->getPosition().x;
+	gPressedButtons[0]->origY = gPressedButtons[1]->getPosition().y;
+	gPressedButtons[1]->origX = gPressedButtons[0]->getPosition().x;
+	gPressedButtons[1]->origY = gPressedButtons[0]->getPosition().y;
 	//set the correct destiny point values
-	gPressedButtons[0]->destX = gPressedButtons[1]->getPosition().x;
-	gPressedButtons[0]->destY = gPressedButtons[1]->getPosition().y;
-	gPressedButtons[1]->destX = gPressedButtons[0]->getPosition().x;
-	gPressedButtons[1]->destY = gPressedButtons[0]->getPosition().y;
+	gPressedButtons[0]->destX = gPressedButtons[0]->getPosition().x;
+	gPressedButtons[0]->destY = gPressedButtons[0]->getPosition().y;
+	gPressedButtons[1]->destX = gPressedButtons[1]->getPosition().x;
+	gPressedButtons[1]->destY = gPressedButtons[1]->getPosition().y;
 
 	//time of current frame
 	Uint32 tcurrent = SDL_GetTicks();
@@ -89,6 +89,9 @@ void Animation::render(LButton gButtons[TOTAL_BUTTONS])
 	//Clear screen
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
+
+	//Render background
+	backgroundTexture.render(0, 0, &backgroundClip);
 
 	//Render buttons
 	for (int i = 0; i < TOTAL_BUTTONS; ++i)
