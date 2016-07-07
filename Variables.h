@@ -7,16 +7,24 @@
 //#include "Gem.h"
 
 //Mouse button sprites
-extern SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
-extern SDL_Rect gColor2SpriteClips[BUTTON_SPRITE_TOTAL];
-extern SDL_Rect gColor3SpriteClips[BUTTON_SPRITE_TOTAL];
-extern SDL_Rect gColor4SpriteClips[BUTTON_SPRITE_TOTAL];
-extern SDL_Rect gColor5SpriteClips[BUTTON_SPRITE_TOTAL];
-extern Texture gColor1SpriteSheetTexture;
-extern Texture gColor2SpriteSheetTexture;
-extern Texture gColor3SpriteSheetTexture;
-extern Texture gColor4SpriteSheetTexture;
-extern Texture gColor5SpriteSheetTexture;
+extern SDL_Rect color1SpriteClips[GEM_SPRITE_TOTAL];
+extern SDL_Rect color2SpriteClips[GEM_SPRITE_TOTAL];
+extern SDL_Rect color3SpriteClips[GEM_SPRITE_TOTAL];
+extern SDL_Rect color4SpriteClips[GEM_SPRITE_TOTAL];
+extern SDL_Rect color5SpriteClips[GEM_SPRITE_TOTAL];
+extern Texture color1SpriteSheetTexture;
+extern Texture color2SpriteSheetTexture;
+extern Texture color3SpriteSheetTexture;
+extern Texture color4SpriteSheetTexture;
+extern Texture color5SpriteSheetTexture;
+
+//Mouse button sprites
+extern SDL_Rect playSpriteClips[BUTTON_SPRITE_TOTAL];
+extern Texture playSpriteSheetTexture;
+
+//Menu background
+extern SDL_Rect menuClip;
+extern Texture menuTexture;
 
 //Window background
 extern SDL_Rect backgroundClip;
@@ -26,7 +34,7 @@ extern Texture backgroundTexture;
 extern Mix_Music *music;
 
 //The sound effects that will be used
-extern Mix_Chunk *selectGem;
+extern Mix_Chunk *selectSound;
 extern Mix_Chunk *sequence1;
 extern Mix_Chunk *sequence2;
 extern Mix_Chunk *sequence3;

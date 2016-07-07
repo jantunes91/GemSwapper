@@ -17,9 +17,9 @@
 
 enum GemSprite
 {
-	BUTTON_SPRITE_MOUSE_OUT = 0,
-	BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-	BUTTON_SPRITE_MOUSE_DOWN = 1,
+	GEM_SPRITE_MOUSE_OUT = 0,
+	GEM_SPRITE_MOUSE_OVER_MOTION = 1,
+	GEM_SPRITE_MOUSE_DOWN = 1,
 	//BUTTON_SPRITE_MOUSE_UP = 3,
 };
 
@@ -67,9 +67,6 @@ public:
 
 	//Shows gem sprite
 	void render();
-
-	//Stores the priority at which the gem should fall
-	int fallPriority;
 
 
 private:

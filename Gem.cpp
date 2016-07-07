@@ -7,7 +7,7 @@ Gem::Gem()
 	mPosition.x = OFFSET_X;
 	mPosition.y = OFFSET_Y;
 
-	mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+	mCurrentSprite = GEM_SPRITE_MOUSE_OUT;
 
 	type = rand() % 5;
 
@@ -98,9 +98,15 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 		}
 
 		//Mouse is outside gem
-		if (!inside && !pressed)
+		if (!inside)
 		{
-			mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
+			if (pressed) {
+				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
+			}
+			else
+			{
+				mCurrentSprite = GEM_SPRITE_MOUSE_OUT;
+			}
 		}
 		//Mouse is inside gem
 		else
@@ -111,20 +117,31 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 			case SDL_MOUSEMOTION:
 				if (!pressed)
 				{
-					mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
+					mCurrentSprite = GEM_SPRITE_MOUSE_OVER_MOTION;
 				}
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 				//Play the sound effect
-				Mix_PlayChannel(-1, selectGem, 0);
+				Mix_PlayChannel(-1, selectSound, 0);
 				//Change the sprite state
-				mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
-				//Tag the gem as pressed
-				setPressed(true);
-				gPressedButtons[pressedCount] = this;
-				pressedCount++;
-				break;
+				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
+				if (pressed)
+				{
+					//Removed the pressed tag
+					setPressed(false);
+					gPressedButtons[0] = NULL;
+					pressedCount--;
+					break;
+				}
+				else
+				{
+					//Tag the gem as pressed
+					setPressed(true);
+					gPressedButtons[pressedCount] = this;
+					pressedCount++;
+					break;
+				}
 			}
 		}
 	}
@@ -140,26 +157,26 @@ void Gem::render()
 	//Show current gem sprite
 	if (type == 0)
 	{
-		gColor1SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor1SpriteClips[mCurrentSprite]);
+		color1SpriteSheetTexture.render(mPosition.x, mPosition.y, &color1SpriteClips[mCurrentSprite]);
 	}
 
 	if (type == 1)
 	{
-		gColor2SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor2SpriteClips[mCurrentSprite]);
+		color2SpriteSheetTexture.render(mPosition.x, mPosition.y, &color2SpriteClips[mCurrentSprite]);
 	}
 
 	if (type == 2)
 	{
-		gColor3SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor3SpriteClips[mCurrentSprite]);
+		color3SpriteSheetTexture.render(mPosition.x, mPosition.y, &color3SpriteClips[mCurrentSprite]);
 	}
 
 	if (type == 3)
 	{
-		gColor4SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor4SpriteClips[mCurrentSprite]);
+		color4SpriteSheetTexture.render(mPosition.x, mPosition.y, &color4SpriteClips[mCurrentSprite]);
 	}
 
 	if (type == 4)
 	{
-		gColor5SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor5SpriteClips[mCurrentSprite]);
+		color5SpriteSheetTexture.render(mPosition.x, mPosition.y, &color5SpriteClips[mCurrentSprite]);
 	}
 }

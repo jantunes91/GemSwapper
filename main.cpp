@@ -14,6 +14,7 @@ and may not be redistributed without written permission.*/
 #include "Texture.h"
 #include "Board.h"
 #include "Variables.h"
+#include "Button.h"
 
 //Starts up SDL and creates window
 bool init();
@@ -29,6 +30,9 @@ SDL_Window* Window = NULL;
 
 //The window renderer
 //SDL_Renderer* gRenderer = NULL;
+
+//The PLAY button
+Button playButton;
 
 //Buttons objects
 Gem gems[TOTAL_GEMS];
@@ -102,6 +106,38 @@ bool init()
 
 bool loadMedia()
 {
+
+	//Load menu background image
+	if (!menuTexture.loadFromFile("Images/menu.png", renderer))
+	{
+		printf("Failed to load menu background texture!\n");
+		return false;
+	}
+	else
+	{
+		//Set where to render
+		menuClip.h = SCREEN_HEIGHT;
+		menuClip.w = SCREEN_WIDTH;
+	}
+	
+	//Load sprites for Color 1
+	if (!playSpriteSheetTexture.loadFromFile("Images/playsprite.png", renderer))
+	{
+		printf("Failed to load play button sprite texture!\n");
+		return false;
+	}
+	else
+	{
+		//Set sprites
+		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		{
+			playSpriteClips[i].x = 0;
+			playSpriteClips[i].y = i * 92;
+			playSpriteClips[i].w = 271;
+			playSpriteClips[i].h = 92;
+		}
+	}
+
 	//Load background image
 	if (!backgroundTexture.loadFromFile("Images/background.png", renderer))
 	{
@@ -116,7 +152,7 @@ bool loadMedia()
 	}
 
 	//Load sprites for Color 1
-	if (!gColor1SpriteSheetTexture.loadFromFile("Images/color1sprite.png",renderer))
+	if (!color1SpriteSheetTexture.loadFromFile("Images/color1sprite.png",renderer))
 	{
 		printf("Failed to load color 1 sprite texture!\n");
 		return false;
@@ -124,17 +160,17 @@ bool loadMedia()
 	else
 	{
 		//Set sprites
-		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		for (int i = 0; i < GEM_SPRITE_TOTAL; ++i)
 		{
-			gColor1SpriteClips[i].x = 0;
-			gColor1SpriteClips[i].y = i * 50;
-			gColor1SpriteClips[i].w = GEM_WIDTH;
-			gColor1SpriteClips[i].h = GEM_HEIGHT;
+			color1SpriteClips[i].x = 0;
+			color1SpriteClips[i].y = i * 50;
+			color1SpriteClips[i].w = GEM_WIDTH;
+			color1SpriteClips[i].h = GEM_HEIGHT;
 		}
 	}
 
 	//Load sprites for Color 2
-	if (!gColor2SpriteSheetTexture.loadFromFile("Images/color2sprite.png", renderer))
+	if (!color2SpriteSheetTexture.loadFromFile("Images/color2sprite.png", renderer))
 	{
 		printf("Failed to load color 2 sprite texture!\n");
 		return false;
@@ -142,17 +178,17 @@ bool loadMedia()
 	else
 	{
 		//Set sprites
-		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		for (int i = 0; i < GEM_SPRITE_TOTAL; ++i)
 		{
-			gColor2SpriteClips[i].x = 0;
-			gColor2SpriteClips[i].y = i * 50;
-			gColor2SpriteClips[i].w = GEM_WIDTH;
-			gColor2SpriteClips[i].h = GEM_HEIGHT;
+			color2SpriteClips[i].x = 0;
+			color2SpriteClips[i].y = i * 50;
+			color2SpriteClips[i].w = GEM_WIDTH;
+			color2SpriteClips[i].h = GEM_HEIGHT;
 		}
 	}
 
 	//Load sprites for Color 3
-	if (!gColor3SpriteSheetTexture.loadFromFile("Images/color3sprite.png", renderer))
+	if (!color3SpriteSheetTexture.loadFromFile("Images/color3sprite.png", renderer))
 	{
 		printf("Failed to load color 3 sprite texture!\n");
 		return false;
@@ -160,17 +196,17 @@ bool loadMedia()
 	else
 	{
 		//Set sprites
-		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		for (int i = 0; i < GEM_SPRITE_TOTAL; ++i)
 		{
-			gColor3SpriteClips[i].x = 0;
-			gColor3SpriteClips[i].y = i * 50;
-			gColor3SpriteClips[i].w = GEM_WIDTH;
-			gColor3SpriteClips[i].h = GEM_HEIGHT;
+			color3SpriteClips[i].x = 0;
+			color3SpriteClips[i].y = i * 50;
+			color3SpriteClips[i].w = GEM_WIDTH;
+			color3SpriteClips[i].h = GEM_HEIGHT;
 		}
 	}
 
 	//Load sprites for Color 4
-	if (!gColor4SpriteSheetTexture.loadFromFile("Images/color4sprite.png", renderer))
+	if (!color4SpriteSheetTexture.loadFromFile("Images/color4sprite.png", renderer))
 	{
 		printf("Failed to load color 4 sprite texture!\n");
 		return false;
@@ -178,17 +214,17 @@ bool loadMedia()
 	else
 	{
 		//Set sprites
-		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		for (int i = 0; i < GEM_SPRITE_TOTAL; ++i)
 		{
-			gColor4SpriteClips[i].x = 0;
-			gColor4SpriteClips[i].y = i * 50;
-			gColor4SpriteClips[i].w = GEM_WIDTH;
-			gColor4SpriteClips[i].h = GEM_HEIGHT;
+			color4SpriteClips[i].x = 0;
+			color4SpriteClips[i].y = i * 50;
+			color4SpriteClips[i].w = GEM_WIDTH;
+			color4SpriteClips[i].h = GEM_HEIGHT;
 		}
 	}
 
 	//Load sprites for Color 5
-	if (!gColor5SpriteSheetTexture.loadFromFile("Images/color5sprite.png", renderer))
+	if (!color5SpriteSheetTexture.loadFromFile("Images/color5sprite.png", renderer))
 	{
 		printf("Failed to load color 5 sprite texture!\n");
 		return false;
@@ -196,12 +232,12 @@ bool loadMedia()
 	else
 	{
 		//Set sprites
-		for (int i = 0; i < BUTTON_SPRITE_TOTAL; ++i)
+		for (int i = 0; i < GEM_SPRITE_TOTAL; ++i)
 		{
-			gColor5SpriteClips[i].x = 0;
-			gColor5SpriteClips[i].y = i * 50;
-			gColor5SpriteClips[i].w = GEM_WIDTH;
-			gColor5SpriteClips[i].h = GEM_HEIGHT;
+			color5SpriteClips[i].x = 0;
+			color5SpriteClips[i].y = i * 50;
+			color5SpriteClips[i].w = GEM_WIDTH;
+			color5SpriteClips[i].h = GEM_HEIGHT;
 		}
 	}
 
@@ -216,13 +252,13 @@ bool loadMedia()
 	}
 
 	//Load the sound effects
-	selectGem = Mix_LoadWAV("Sounds/select.wav");
+	selectSound = Mix_LoadWAV("Sounds/select.wav");
 	sequence1 = Mix_LoadWAV("Sounds/sequence1.wav");
 	sequence2 = Mix_LoadWAV("Sounds/sequence2.wav");
 	sequence3 = Mix_LoadWAV("Sounds/sequence3.wav");
 
 	//If there was a problem loading the sound effects
-	if ((sequence1 == NULL) || (sequence2 == NULL) || (sequence3 == NULL) || (selectGem == NULL))
+	if ((sequence1 == NULL) || (sequence2 == NULL) || (sequence3 == NULL) || (selectSound == NULL))
 	{
 		printf("Failed to load the sound effects!\n");
 		return false;
@@ -260,6 +296,11 @@ bool loadMedia()
 		multiShadowClip.h = 45;
 	}
 
+	//Set the correct position for the buttons
+	playButton.setPosition(376, 500);
+	playButton.setDimensions(271, 92);
+	playButton.setID("play");
+
 	//Set the correct positions for the gems
 	for (int y = 0; y < 8; y++)
 	{
@@ -272,6 +313,22 @@ bool loadMedia()
 	}
 
 	return true;
+}
+
+void renderMenu()
+{
+	//Clear screen
+	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(renderer);
+
+	//Render background
+	menuTexture.render(0, 0, &menuClip);
+
+	//Render PLAY button
+	playButton.render();
+
+	//Update screen
+	SDL_RenderPresent(renderer);
 }
 
 void render()
@@ -323,11 +380,11 @@ void render()
 void close()
 {
 	//Free loaded images
-	gColor1SpriteSheetTexture.free();
-	gColor2SpriteSheetTexture.free();
-	gColor3SpriteSheetTexture.free();
-	gColor4SpriteSheetTexture.free();
-	gColor5SpriteSheetTexture.free();
+	color1SpriteSheetTexture.free();
+	color2SpriteSheetTexture.free();
+	color3SpriteSheetTexture.free();
+	color4SpriteSheetTexture.free();
+	color5SpriteSheetTexture.free();
 	backgroundTexture.free();
 
 	//Free loaded sounds
@@ -335,7 +392,7 @@ void close()
 	Mix_FreeChunk(sequence1);
 	Mix_FreeChunk(sequence2);
 	Mix_FreeChunk(sequence3);
-	Mix_FreeChunk(selectGem);
+	Mix_FreeChunk(selectSound);
 
 	//Free the font that was used
 	TTF_CloseFont(font);
@@ -372,8 +429,27 @@ int main(int argc, char* args[])
 			//Main loop flag
 			bool quit = false;
 
+			//Menu loop flag
+			bool play = false;
+
 			//Event handler
 			SDL_Event e;
+
+			//Menu loop
+			while (!play)
+			{
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
+					{
+						quit = true;
+					}
+
+					play = playButton.handleEvent(&e);
+				}
+				renderMenu();
+			}
 
 			//render the initial board
 			render();
@@ -400,7 +476,7 @@ int main(int argc, char* args[])
 				while (SDL_PollEvent(&e) != 0)
 				{
 					//User requests quit
-					if (e.type == SDL_QUIT)
+					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
 					{
 						quit = true;
 					}

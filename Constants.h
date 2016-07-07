@@ -13,4 +13,5 @@ const int OFFSET_X = 400;
 const int OFFSET_Y = 100;
 
 //Sprite constants
-const int BUTTON_SPRITE_TOTAL = 2;
+const int GEM_SPRITE_TOTAL = 2;
+const int BUTTON_SPRITE_TOTAL = 3;

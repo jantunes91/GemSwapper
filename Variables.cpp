@@ -1,16 +1,24 @@
 #include "Variables.h"
 
 //Mouse gem sprites
-SDL_Rect gColor1SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor2SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor3SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor4SpriteClips[BUTTON_SPRITE_TOTAL];
-SDL_Rect gColor5SpriteClips[BUTTON_SPRITE_TOTAL];
-Texture gColor1SpriteSheetTexture;
-Texture gColor2SpriteSheetTexture;
-Texture gColor3SpriteSheetTexture;
-Texture gColor4SpriteSheetTexture;
-Texture gColor5SpriteSheetTexture;
+SDL_Rect color1SpriteClips[GEM_SPRITE_TOTAL];
+SDL_Rect color2SpriteClips[GEM_SPRITE_TOTAL];
+SDL_Rect color3SpriteClips[GEM_SPRITE_TOTAL];
+SDL_Rect color4SpriteClips[GEM_SPRITE_TOTAL];
+SDL_Rect color5SpriteClips[GEM_SPRITE_TOTAL];
+Texture color1SpriteSheetTexture;
+Texture color2SpriteSheetTexture;
+Texture color3SpriteSheetTexture;
+Texture color4SpriteSheetTexture;
+Texture color5SpriteSheetTexture;
+
+//Mouse button sprites
+SDL_Rect playSpriteClips[BUTTON_SPRITE_TOTAL];
+Texture playSpriteSheetTexture;
+
+//Menu background
+SDL_Rect menuClip;
+Texture menuTexture;
 
 //Window background
 SDL_Rect backgroundClip;
@@ -20,7 +28,7 @@ Texture backgroundTexture;
 Mix_Music *music = NULL;
 
 //The sound effects that will be used
-Mix_Chunk *selectGem = NULL;
+Mix_Chunk *selectSound = NULL;
 Mix_Chunk *sequence1 = NULL;
 Mix_Chunk *sequence2 = NULL;
 Mix_Chunk *sequence3 = NULL;
