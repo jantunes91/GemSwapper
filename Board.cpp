@@ -283,12 +283,6 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS])
 				gems[x + (y + y0) * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
 				gems[x + (y + y0) * 8].origY = y * OFFSET_MULTIPLIER + OFFSET_Y;
 
-				//set the variables for the animation process on the origin position for a new piece to fall
-				gems[x + y * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
-				gems[x + y * 8].origY = newGemOffset * OFFSET_MULTIPLIER + OFFSET_Y;
-				gems[x + y * 8].updateDrop = -newGemOffset;
-				newGemOffset--;
-
 				////swap the piece with the respective empty space
 				gems[x + (y + y0) * 8].setType(gems[x + y * 8].getType());
 				gems[x + y * 8].setType(-1);
@@ -296,6 +290,23 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS])
 				gems[x + (y + y0) * 8].setToUpdate(true);
 				gems[x + y * 8].setRemoved(true);
 
+			}
+		}
+	}
+
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 7; y >= 0; y--)
+		{
+			int newGemOffset = -1;
+			// If the gem is removed
+			if (gems[x + y * 8].isRemoved())
+			{
+				//set the variables for the animation process on the origin position for a new piece to fall
+				gems[x + y * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
+				gems[x + y * 8].origY = newGemOffset * OFFSET_MULTIPLIER + OFFSET_Y;
+				gems[x + y * 8].updateDrop = -newGemOffset;
+				newGemOffset--;
 			}
 		}
 	}
