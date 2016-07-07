@@ -12,13 +12,13 @@ Animation::~Animation()
 {
 }
 
-void Animation::rect_lerp(LButton *button, float f) {
+void Animation::rect_lerp(Gem *gem, float f) {
 	float t = 1.0f - f;
-	button->setPosition((float)button->origX * t + (float)button->destX * f, 
-		(float)button->origY * t + (float)button->destY * f);
+	gem->setPosition((float)gem->origX * t + (float)gem->destX * f, 
+		(float)gem->origY * t + (float)gem->destY * f);
 }
 
-void Animation::swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS])
+void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 {
 	//set the correct origin point values
 	gPressedButtons[0]->origX = gPressedButtons[1]->getPosition().x;
@@ -42,24 +42,24 @@ void Animation::swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TO
 		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[0]);
 		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[1]);
 
-		render(gButtons);
+		render(gems);
 	}
 }
 
-void Animation::sequenceRemoveAnim(LButton gButtons[TOTAL_BUTTONS])
+void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS])
 {
-	bool removed[TOTAL_BUTTONS];
+	bool removed[TOTAL_GEMS];
 
-	//store the previous values of the buttons' removed flag
+	//store the previous values of the gems' removed flag
 	for (int y = 0; y < 8; y++)
 	{
 		for (int x = 0; x < 8; x++)
 		{
-			removed[x + y * 8] = gButtons[x + y * 8].isRemoved();
+			removed[x + y * 8] = gems[x + y * 8].isRemoved();
 		}
 	}
 
-	//alternate removed between true and false 4 times. this will cause the square to flash 4 times
+	//alternate removed between true and false 4 times. this will cause the gem to flash 4 times
 	for (int i = 0; i < 4; i++)
 	{
 		for (int y = 0; y < 8; y++)
@@ -68,42 +68,95 @@ void Animation::sequenceRemoveAnim(LButton gButtons[TOTAL_BUTTONS])
 			{
 				if (removed[x + y * 8])
 				{
-					if (gButtons[x + y * 8].isRemoved())
+					if (gems[x + y * 8].isRemoved())
 					{
-						gButtons[x + y * 8].setRemoved(false);
+						gems[x + y * 8].setRemoved(false);
 					}
 					else
 					{
-						gButtons[x + y * 8].setRemoved(true);
+						gems[x + y * 8].setRemoved(true);
 					}
 				}
 			}
 		}
 		SDL_Delay(100);
-		render(gButtons);
+		render(gems);
 	}
 }
 
-void Animation::render(LButton gButtons[TOTAL_BUTTONS])
+void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS])
+{
+	bool animationDone = false;
+	int tcurrent = SDL_GetTicks();
+	//play the animations till they're all finished
+	while (!animationDone)
+	{
+		animationDone = true;
+		for (int x = 0; x < 8; x++)
+		{
+			for (int y = 7; y >= 0; y--)
+			{
+				// If the gem is not empty and has to fall
+				if (gems[x + y * 8].toUpdate() == true && gems[x + y * 8].isRemoved() == false)
+				{
+					//updates the animation and computes if all the animations are done
+					animationDone = animationDone & animate(tcurrent, 200, &gems[x + y * 8]);
+				}
+			}
+		}
+		if (!animationDone)
+		{
+			render(gems);
+		}
+	}
+}
+
+void Animation::render(Gem gems[TOTAL_GEMS])
 {
 	//Clear screen
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(gRenderer);
+	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(renderer);
 
 	//Render background
 	backgroundTexture.render(0, 0, &backgroundClip);
 
-	//Render buttons
-	for (int i = 0; i < TOTAL_BUTTONS; ++i)
+	std::string scoreString = std::to_string(score);
+	char const *scoreArray = scoreString.c_str();
+	//Render the score and the shadow
+	scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
+	scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+	//Convert it to texture
+	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
+	scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+	//Apply the score to the screen
+	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreShadowClip);
+	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreTextClip);
+
+	//Convert the multiplier from int to char*
+	std::string multiString = std::to_string(multiplier);
+	multiString += "x";
+	char const *multiArray = multiString.c_str();
+	//Render the multiplier and the shadow
+	multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
+	multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
+	//Convert it to texture
+	multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
+	multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
+	//Apply the multiplier to the screen	
+	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
+	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
+
+	//Render gems
+	for (int i = 0; i < TOTAL_GEMS; ++i)
 	{
-		gButtons[i].render(); //change to render with animation
+		gems[i].render(); //change to render with animation
 	}
 
 	//Update screen
-	SDL_RenderPresent(gRenderer);
+	SDL_RenderPresent(renderer);
 }
 
-bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total, LButton* button)
+bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total, Gem* gem)
 {
 	Uint32 tcurrent = SDL_GetTicks();
 	if (tcurrent > animation_start_time + animation_time_total) {
@@ -115,7 +168,7 @@ bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total
 		// calculate current animation percentage - in range [0; 1]
 		float factor = ((float)(tcurrent - animation_start_time)) / animation_time_total;
 
-		rect_lerp(button, factor);
+		rect_lerp(gem, factor);
 
 		return false;
 	}

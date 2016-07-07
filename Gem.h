@@ -4,30 +4,31 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <time.h>
 #include <Windows.h>
-#include "LTexture.h"
+#include "Texture.h"
 #include "Constants.h"
 #include "Variables.h"
 
 
-enum LButtonSprite
+enum GemSprite
 {
 	BUTTON_SPRITE_MOUSE_OUT = 0,
 	BUTTON_SPRITE_MOUSE_OVER_MOTION = 1,
-	BUTTON_SPRITE_MOUSE_DOWN = 2,
+	BUTTON_SPRITE_MOUSE_DOWN = 1,
 	//BUTTON_SPRITE_MOUSE_UP = 3,
 };
 
 //The mouse button
-class LButton
+class Gem
 {
 public:
 	//Initializes internal variables
-	LButton();
+	Gem();
 
 	//Sets top left position
 	void setPosition(int x, int y);
@@ -62,12 +63,12 @@ public:
 	int updateDrop;
 
 	//Handles mouse event
-	void handleEvent(SDL_Event* e, LButton* gPressedButtons[2]);
+	void handleEvent(SDL_Event* e, Gem* gPressedButtons[2]);
 
-	//Shows button sprite
+	//Shows gem sprite
 	void render();
 
-	//Stores the priority at which the button should fall
+	//Stores the priority at which the gem should fall
 	int fallPriority;
 
 
@@ -76,7 +77,7 @@ private:
 	SDL_Point mPosition;
 
 	//Currently used global sprite
-	LButtonSprite mCurrentSprite;
+	GemSprite mCurrentSprite;
 
 	bool pressed;
 

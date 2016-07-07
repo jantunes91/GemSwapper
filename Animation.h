@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#include "LButton.h"
+#include "Gem.h"
 
 class Animation
 {
@@ -9,17 +9,19 @@ public:
 
 	~Animation();
 
-	//linear interpolation between button0 position and button1 position
-	void rect_lerp(LButton *button, float f);
+	//linear interpolation between gem0 position and gem1 position
+	void rect_lerp(Gem *gem, float f);
 	
-	//handles the swap animation between two squares
-	void swapSquaresAnim(LButton *gPressedButtons[2], LButton gButtons[TOTAL_BUTTONS]);
+	//handles the swap animation between two gems
+	void swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS]);
 
-	void sequenceRemoveAnim(LButton gButtons[TOTAL_BUTTONS]);
+	void sequenceRemoveAnim(Gem gems[TOTAL_GEMS]);
+
+	void dropGemsAnim(Gem gems[TOTAL_GEMS]);
 
 	//renders the board
-	void render(LButton gButtons[TOTAL_BUTTONS]);
+	void render(Gem gems[TOTAL_GEMS]);
 
-	bool animate(Uint32 animation_start_time, Uint32 animation_time_total, LButton* button);
+	bool animate(Uint32 animation_start_time, Uint32 animation_time_total, Gem* gem);
 };
 

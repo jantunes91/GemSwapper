@@ -1,8 +1,8 @@
-#include "LButton.h"
+#include "Gem.h"
 #include "Constants.h"
 #include "Variables.h"
 
-LButton::LButton()
+Gem::Gem()
 {
 	mPosition.x = OFFSET_X;
 	mPosition.y = OFFSET_Y;
@@ -18,53 +18,53 @@ LButton::LButton()
 	destX = 0;
 }
 
-void LButton::setPosition(int x, int y)
+void Gem::setPosition(int x, int y)
 {
 	mPosition.x = x;
 	mPosition.y = y;
 }
 
-SDL_Point LButton::getPosition()
+SDL_Point Gem::getPosition()
 {
 	return mPosition;
 }
 
-void LButton::setPressed(bool isPressed)
+void Gem::setPressed(bool isPressed)
 {
 	pressed = isPressed;
 }
 
-int LButton::getType()
+int Gem::getType()
 {
 	return type;
 }
 
-void LButton::setType(int tempType)
+void Gem::setType(int tempType)
 {
 	type = tempType;
 }
 
-void LButton::setRemoved(bool isRemoved)
+void Gem::setRemoved(bool isRemoved)
 {
 	removed = isRemoved;
 }
 
-bool LButton::isRemoved()
+bool Gem::isRemoved()
 {
 	return removed;
 }
 
-void LButton::setToUpdate(bool toUpdate)
+void Gem::setToUpdate(bool toUpdate)
 {
 	updatePosition = toUpdate;
 }
 
-bool LButton::toUpdate()
+bool Gem::toUpdate()
 {
 	return updatePosition;
 }
 
-void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2])
+void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 {
 	//If mouse event happened
 	if (e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP)
@@ -73,36 +73,36 @@ void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2])
 		int x, y;
 		SDL_GetMouseState(&x, &y);
 
-		//Check if mouse is in button
+		//Check if mouse is in gem
 		bool inside = true;
 
-		//Mouse is left of the button
+		//Mouse is left of the gem
 		if (x < mPosition.x)
 		{
 			inside = false;
 		}
-		//Mouse is right of the button
-		else if (x > mPosition.x + BUTTON_WIDTH)
+		//Mouse is right of the gem
+		else if (x > mPosition.x + GEM_WIDTH)
 		{
 			inside = false;
 		}
-		//Mouse above the button
+		//Mouse above the gem
 		else if (y < mPosition.y)
 		{
 			inside = false;
 		}
-		//Mouse below the button
-		else if (y > mPosition.y + BUTTON_HEIGHT)
+		//Mouse below the gem
+		else if (y > mPosition.y + GEM_HEIGHT)
 		{
 			inside = false;
 		}
 
-		//Mouse is outside button
+		//Mouse is outside gem
 		if (!inside && !pressed)
 		{
 			mCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
 		}
-		//Mouse is inside button
+		//Mouse is inside gem
 		else
 		{
 			//Set mouse over sprite
@@ -117,10 +117,10 @@ void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2])
 
 			case SDL_MOUSEBUTTONDOWN:
 				//Play the sound effect
-				Mix_PlayChannel(-1, selectSquare, 0);
+				Mix_PlayChannel(-1, selectGem, 0);
 				//Change the sprite state
 				mCurrentSprite = BUTTON_SPRITE_MOUSE_DOWN;
-				//Tag the button as pressed
+				//Tag the gem as pressed
 				setPressed(true);
 				gPressedButtons[pressedCount] = this;
 				pressedCount++;
@@ -130,14 +130,14 @@ void LButton::handleEvent(SDL_Event* e, LButton* gPressedButtons[2])
 	}
 }
 
-void LButton::render()
+void Gem::render()
 {
 	if (removed)
 	{
 		return;
 		//type = -1;
 	}
-	//Show current button sprite
+	//Show current gem sprite
 	if (type == 0)
 	{
 		gColor1SpriteSheetTexture.render(mPosition.x, mPosition.y, &gColor1SpriteClips[mCurrentSprite]);
