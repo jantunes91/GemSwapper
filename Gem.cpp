@@ -142,7 +142,19 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 					pressedCount++;
 					break;
 				}
+			case SDL_MOUSEBUTTONUP:
+				//Change the sprite state
+				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
+				if (pressedCount == 1 && gPressedButtons[0] != this)
+				{
+					//Tag the gem as pressed
+					setPressed(true);
+					gPressedButtons[pressedCount] = this;
+					pressedCount++;
+					break;
+				}
 			}
+
 		}
 	}
 }
