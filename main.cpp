@@ -307,6 +307,8 @@ bool loadMedia()
 		for (int x = 0; x < 8; x++)
 		{
 			gems[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+			//gems[x + y * 8].origX = gems[x + y * 8].getPosition().x;
+			//gems[x + y * 8].origY = (y - 8) * OFFSET_MULTIPLIER + OFFSET_Y;
 			gems[x + y * 8].destX = gems[x + y * 8].getPosition().x;
 			gems[x + y * 8].destY = gems[x + y * 8].getPosition().y;
 		}
@@ -412,6 +414,9 @@ void close()
 
 int main(int argc, char* args[])
 {
+	//Seed for the random function
+	srand((unsigned)time(NULL));
+
 	//Start up SDL and create window
 	if (!init())
 	{
@@ -444,6 +449,8 @@ int main(int argc, char* args[])
 					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
 					{
 						quit = true;
+						play = true;
+						break;
 					}
 
 					play = playButton.handleEvent(&e);
@@ -451,23 +458,28 @@ int main(int argc, char* args[])
 				renderMenu();
 			}
 
-			//render the initial board
-			render();
-
-			//play the background music on loop
-			Mix_PlayMusic(music, -1);
-
-			//this delay is just for eventual sequences on the initial
-			//board to not vanish right when we load the game
-			SDL_Delay(500);
-
-			//clear initial sequences and drop new gems
-			//loop only stops when there's no more sequences to clear
-			while (board.checkSequence(gems))
+			if (!quit)
 			{
-				board.dropDownGems(gems);
+				//render the initial board
+				render();
+
+				//play the background music on loop
+				Mix_PlayMusic(music, -1);
+
+				//this delay is just for eventual sequences on the initial
+				//board to not vanish right when we load the game
+				SDL_Delay(500);
+
+				//clear initial sequences and drop new gems
+				//loop only stops when there's no more sequences to clear
+				while (board.checkSequence(gems,false))
+				{
+					board.dropDownGems(gems);
+				}
+				quit = !board.checkAvailableMoves(gems);
+				multiplier = 1;
 			}
-			multiplier = 1;
+
 
 			//While application is running
 			while (!quit)
@@ -488,6 +500,7 @@ int main(int argc, char* args[])
 						if (pressedCount == 2)
 						{
 							board.swapGems(pressedGems, gems);
+							quit = !board.checkAvailableMoves(gems);
 						}
 					}
 				}

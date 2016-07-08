@@ -24,7 +24,8 @@ public:
 	void swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS]);
 
 	//Checks if there's a sequence and removes it from the board
-	bool checkSequence(Gem gems[TOTAL_GEMS]);
+	//with simple flag as true, it doesn't remove the sequence, plays the animation or updates the score
+	bool checkSequence(Gem gems[TOTAL_GEMS], bool simple);
 
 	//Removes a previously found sequence, given it's end and it's lenght
 	void removeSequence(int x, int y, int lenght, int orientation, Gem gems[TOTAL_GEMS]);
@@ -35,6 +36,6 @@ public:
 
 	void generateNewGems(Gem gems[TOTAL_GEMS]);
 
-	//bool checkAvailableMoves(Gem gems[TOTAL_BUTTONS]);
+	bool checkAvailableMoves(Gem gems[TOTAL_GEMS]);
 };
 

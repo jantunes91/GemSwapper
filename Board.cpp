@@ -53,7 +53,7 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 		gPressedButtons[0]->setPosition(gem0Position.x, gem0Position.y);
 		gPressedButtons[1]->setPosition(gem1Position.x, gem1Position.y);
 
-		if (!checkSequence(gems)) //if there's no sequence, revert the swap
+		if (!checkSequence(gems,false)) //if there's no sequence, revert the swap
 		{
 			gem0Position = gPressedButtons[0]->getPosition();
 			gem1Position = gPressedButtons[1]->getPosition();
@@ -74,7 +74,7 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 		else
 		{
 			dropDownGems(gems);
-			while (checkSequence(gems))
+			while (checkSequence(gems,false))
 			{
 				dropDownGems(gems);
 			}
@@ -86,7 +86,7 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 	}
 }
 
-bool Board::checkSequence(Gem gems[TOTAL_GEMS])
+bool Board::checkSequence(Gem gems[TOTAL_GEMS], bool simple)
 {
 	bool sequenceFound = false;
 
@@ -116,8 +116,11 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS])
 				else
 				{
 					if (count > 2 && gems[x + y * 8].getType() != -1) {
-						removeSequence(location, y, count, 0, gems);
-						calculateScore(count);
+						if (!simple)
+						{
+							removeSequence(location, y, count, 0, gems);
+							calculateScore(count);
+						}
 						sequenceFound = true;
 					}
 					type = gems[x + y * 8].getType();
@@ -126,8 +129,11 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS])
 			}
 			if (x == 7 && count > 2)
 			{
-				removeSequence(location, y, count, 0, gems);
-				calculateScore(count);
+				if (!simple)
+				{
+					removeSequence(location, y, count, 0, gems);
+					calculateScore(count);
+				}
 				sequenceFound = true;
 			}
 		}
@@ -158,8 +164,11 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS])
 				else
 				{
 					if (count > 2 && gems[i + j * 8].getType() != -1) {
-						removeSequence(i, location, count, 1, gems);
-						calculateScore(count);
+						if (!simple)
+						{
+							removeSequence(i, location, count, 1, gems);
+							calculateScore(count);
+						}
 						sequenceFound = true;
 					}
 					type = gems[i + j * 8].getType();
@@ -168,14 +177,17 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS])
 			}
 			if (j == 7 && count > 2 && gems[i + j * 8].getType() != -1)
 			{
-				removeSequence(i, location, count, 1, gems);
-				calculateScore(count);
+				if (!simple)
+				{
+					removeSequence(i, location, count, 1, gems);
+					calculateScore(count);
+				}
 				sequenceFound = true;
 			}
 		}
 	}
 
-	if (sequenceFound)
+	if (sequenceFound && !simple)
 	{
 		anim.sequenceRemoveAnim(gems);
 	}
@@ -353,38 +365,80 @@ void Board::generateNewGems(Gem gems[TOTAL_GEMS])
 	}
 }
 
-//bool Board::checkAvailableMoves(Gem gems[TOTAL_BUTTONS])
-//{
-//	bool result = false;
-//
-//	// Checks for available moves in columns
-//	int count = 0;
-//	int type = -2;
-//	for (int x = 0; x < 8; x++)
-//	{
-//		for (int y = 0; y < 8; y++)
-//		{
-//			if (y == 0)
-//			{
-//				type = gems[x + y * 8].getType();
-//				count = 1;
-//			}
-//			else
-//			{
-//				if (gems[x + y * 8].getType() == type)
-//				{
-//					count++;
-//					if (count == 2) {
-//						if(x >= 2)
-//						{
-//							;
-//					}
-//				}
-//				else
-//				{
-//					type = gems[x + y * 8].getType();
-//					count = 1;
-//				}
-//			}
-//	return result;
-//}
+bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS])
+{
+	bool result = false;
+
+	// Checks for available moves in columns
+	int count = 0;
+	int type = -2;
+	Gem tempGems[TOTAL_GEMS];
+
+	//Make a copy of the gems board
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			tempGems[x + y * 8] = gems[x + y * 8];
+		}
+	}
+
+	int tempType;
+
+	//Test horizontal swaps
+	for (int x = 0; x < 7; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
+			//Make a copy of the gems board
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
+					tempGems[x + y * 8] = gems[x + y * 8];
+				}
+			}
+
+			//Make swap
+			tempType = tempGems[x + y * 8].getType();
+			tempGems[x + y * 8].setType(tempGems[(x + 1) + y * 8].getType());
+			tempGems[(x + 1) + y * 8].setType(tempType);
+
+			//Check if there's a sequence
+			result = checkSequence(tempGems, true);
+			if (result)
+			{
+				return result;
+			}
+		}
+	}
+
+	//Test vertical swaps
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 7; y++)
+		{
+			//Make a copy of the gems board
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
+					tempGems[x + y * 8] = gems[x + y * 8];
+				}
+			}
+
+			//Make swap
+			tempType = tempGems[x + y * 8].getType();
+			tempGems[x + y * 8].setType(tempGems[x + (y + 1) * 8].getType());
+			tempGems[x + ( y + 1) * 8].setType(tempType);
+
+			//Check if there's a sequence
+			result = checkSequence(tempGems, true);
+			if (result)
+			{
+				return result;
+			}
+		}
+	}
+	return result;
+}
