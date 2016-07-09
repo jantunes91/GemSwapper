@@ -123,28 +123,28 @@ void Animation::render(Gem gems[TOTAL_GEMS])
 	std::string scoreString = std::to_string(score);
 	char const *scoreArray = scoreString.c_str();
 	//Render the score and the shadow
-	scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
-	scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
+	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
 	//Convert it to texture
-	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
-	scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
+	SDL_Texture *scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
 	//Free the surfaces
 	SDL_FreeSurface(scoreSurface);
 	SDL_FreeSurface(scoreShadowSurface);
 	//Apply the score to the screen
-	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreShadowClip);
-	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreTextClip);
+	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreGameShadowClip);
+	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreGameTextClip);
 
 	//Convert the multiplier from int to char*
 	std::string multiString = std::to_string(multiplier);
 	multiString += "x";
 	char const *multiArray = multiString.c_str();
 	//Render the multiplier and the shadow
-	multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
-	multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
+	SDL_Surface *multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
+	SDL_Surface *multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
 	//Convert it to texture
-	multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
-	multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
+	SDL_Texture *multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
+	SDL_Texture *multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
 	//Free the surfaces
 	SDL_FreeSurface(multiplierSurface);
 	SDL_FreeSurface(multiShadowSurface);

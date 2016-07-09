@@ -1,6 +1,6 @@
 #include "Variables.h"
 
-//Mouse gem sprites
+//Gem sprites
 SDL_Rect color1SpriteClips[GEM_SPRITE_TOTAL];
 SDL_Rect color2SpriteClips[GEM_SPRITE_TOTAL];
 SDL_Rect color3SpriteClips[GEM_SPRITE_TOTAL];
@@ -12,17 +12,29 @@ Texture color3SpriteSheetTexture;
 Texture color4SpriteSheetTexture;
 Texture color5SpriteSheetTexture;
 
-//Mouse button sprites
+//Play button sprites
 SDL_Rect playSpriteClips[BUTTON_SPRITE_TOTAL];
 Texture playSpriteSheetTexture;
+
+//Play Again button sprites
+SDL_Rect playagainSpriteClips[BUTTON_SPRITE_TOTAL];
+Texture playagainSpriteSheetTexture;
+
+//Play button sprites
+SDL_Rect quitSpriteClips[BUTTON_SPRITE_TOTAL];
+Texture quitSpriteSheetTexture;
 
 //Menu background
 SDL_Rect menuClip;
 Texture menuTexture;
 
-//Window background
+//Game background
 SDL_Rect backgroundClip;
 Texture backgroundTexture;
+
+//Game Over background
+SDL_Rect gameoverClip;
+Texture gameoverTexture;
 
 //The music that will be played
 Mix_Music *music = NULL;
@@ -36,21 +48,11 @@ Mix_Chunk *sequence3 = NULL;
 //The font that's going to be used
 TTF_Font *font = NULL;
 
-//The surface that contains the score rendered in the chosen font
-SDL_Surface *scoreSurface;
-SDL_Surface *scoreShadowSurface;
-
-//The surface that contains the multiplier rendered in the chosen font
-SDL_Surface *multiplierSurface;
-SDL_Surface *multiShadowSurface;
-
-//The texture converted from the surface
-SDL_Texture* scoreTexture;
-SDL_Texture* scoreShadowTexture;
-SDL_Texture* multiplierTexture;
-SDL_Texture* multiShadowTexture;
-SDL_Rect scoreTextClip;
-SDL_Rect scoreShadowClip;
+//The text clips
+SDL_Rect scoreGameTextClip;
+SDL_Rect scoreGameShadowClip;
+SDL_Rect scoreGOverTextClip;
+SDL_Rect scoreGOverShadowClip;
 SDL_Rect multiplierClip;
 SDL_Rect multiShadowClip;
 

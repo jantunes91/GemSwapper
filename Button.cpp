@@ -107,4 +107,16 @@ void Button::render()
 	{
 		playSpriteSheetTexture.render(position.x, position.y, &playSpriteClips[currentSprite]);
 	}
+
+	//Show PLAY AGAIN button
+	if (id == "playagain")
+	{
+		playagainSpriteSheetTexture.render(position.x, position.y, &playagainSpriteClips[currentSprite]);
+	}
+
+	//Show QUIT Button
+	if (id == "quit")
+	{
+		quitSpriteSheetTexture.render(position.x, position.y, &quitSpriteClips[currentSprite]);
+	}
 }
