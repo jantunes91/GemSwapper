@@ -607,14 +607,14 @@ void Window::show()
 					quitGame = true;
 				}
 
-				//Handle button events
+				//Handle gem events
 				for (int i = 0; i < TOTAL_GEMS; ++i)
 				{
 					gems[i].handleEvent(&e, pressedGems);
 					if (pressedCount == 2)
 					{
 						board.swapGems(pressedGems, gems, this);
-						gameOver = board.checkAvailableMoves(gems, this);
+						gameOver = !board.checkAvailableMoves(gems, this);
 					}
 				}
 			}

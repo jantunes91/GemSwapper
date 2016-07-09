@@ -27,50 +27,53 @@ bool Board::isAdjacent(Gem *gem0, Gem *gem1)
 	}
 }
 
-void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window)
+void Board::swapGems(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 {
-	if (!isAdjacent(gPressedButtons[0], gPressedButtons[1]))
+	if (!isAdjacent(pressedGems[0], pressedGems[1]))
 	{
-		gPressedButtons[0]->setPressed(false);
-		gPressedButtons[0] = gPressedButtons[1];
+		pressedGems[0]->setPressed(false);
+		pressedGems[0] = pressedGems[1];
 		pressedCount = 1;
 		return;
 	}
 	else
 	{
-		SDL_Point gem0Position = gPressedButtons[0]->getPosition();
-		SDL_Point gem1Position = gPressedButtons[1]->getPosition();
-		int gem0type = gPressedButtons[0]->getType();
-		int gem1type = gPressedButtons[1]->getType();
+		SDL_Point gem0Position = pressedGems[0]->getPosition();
+		SDL_Point gem1Position = pressedGems[1]->getPosition();
+		int gem0type = pressedGems[0]->getType();
+		int gem1type = pressedGems[1]->getType();
 		
 		//swap the types
-		gPressedButtons[0]->setType(gem1type);
-		gPressedButtons[1]->setType(gem0type);
+		pressedGems[0]->setType(gem1type);
+		pressedGems[1]->setType(gem0type);
 
 		//animate the swap
-		anim.swapGemsAnim(gPressedButtons, gems, window);
+		anim.swapGemsAnim(pressedGems, gems, window);
 
 		//swap the positions
-		gPressedButtons[0]->setPosition(gem0Position.x, gem0Position.y);
-		gPressedButtons[1]->setPosition(gem1Position.x, gem1Position.y);
+		pressedGems[0]->setPosition(gem0Position.x, gem0Position.y);
+		pressedGems[1]->setPosition(gem1Position.x, gem1Position.y);
+
+		pressedGems[0]->unselectTexture();
+		pressedGems[1]->unselectTexture();
 
 		if (!checkSequence(gems, window, false)) //if there's no sequence, revert the swap
 		{
-			gem0Position = gPressedButtons[0]->getPosition();
-			gem1Position = gPressedButtons[1]->getPosition();
-			gem0type = gPressedButtons[0]->getType();
-			gem1type = gPressedButtons[1]->getType();
+			gem0Position = pressedGems[0]->getPosition();
+			gem1Position = pressedGems[1]->getPosition();
+			gem0type = pressedGems[0]->getType();
+			gem1type = pressedGems[1]->getType();
 
 			//swap the types
-			gPressedButtons[0]->setType(gem1type);
-			gPressedButtons[1]->setType(gem0type);
+			pressedGems[0]->setType(gem1type);
+			pressedGems[1]->setType(gem0type);
 
 			//animate the swap
-			anim.swapGemsAnim(gPressedButtons, gems, window);
+			anim.swapGemsAnim(pressedGems, gems, window);
 
 			//swap the positions
-			gPressedButtons[0]->setPosition(gem0Position.x, gem0Position.y);
-			gPressedButtons[1]->setPosition(gem1Position.x, gem1Position.y);
+			pressedGems[0]->setPosition(gem0Position.x, gem0Position.y);
+			pressedGems[1]->setPosition(gem1Position.x, gem1Position.y);
 		}
 		else
 		{
@@ -81,8 +84,8 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *wind
 			}
 		}
 		multiplier = 1;
-		gPressedButtons[0]->setPressed(false);
-		gPressedButtons[1]->setPressed(false);
+		pressedGems[0]->setPressed(false);
+		pressedGems[1]->setPressed(false);
 		pressedCount = 0;
 	}
 }

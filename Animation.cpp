@@ -19,18 +19,18 @@ void Animation::rect_lerp(Gem *gem, float f) {
 		(float)gem->origY * t + (float)gem->destY * f);
 }
 
-void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window)
+void Animation::swapGemsAnim(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 {
 	//set the correct origin point values
-	gPressedButtons[0]->origX = gPressedButtons[1]->getPosition().x;
-	gPressedButtons[0]->origY = gPressedButtons[1]->getPosition().y;
-	gPressedButtons[1]->origX = gPressedButtons[0]->getPosition().x;
-	gPressedButtons[1]->origY = gPressedButtons[0]->getPosition().y;
+	pressedGems[0]->origX = pressedGems[1]->getPosition().x;
+	pressedGems[0]->origY = pressedGems[1]->getPosition().y;
+	pressedGems[1]->origX = pressedGems[0]->getPosition().x;
+	pressedGems[1]->origY = pressedGems[0]->getPosition().y;
 	//set the correct destiny point values
-	gPressedButtons[0]->destX = gPressedButtons[0]->getPosition().x;
-	gPressedButtons[0]->destY = gPressedButtons[0]->getPosition().y;
-	gPressedButtons[1]->destX = gPressedButtons[1]->getPosition().x;
-	gPressedButtons[1]->destY = gPressedButtons[1]->getPosition().y;
+	pressedGems[0]->destX = pressedGems[0]->getPosition().x;
+	pressedGems[0]->destY = pressedGems[0]->getPosition().y;
+	pressedGems[1]->destX = pressedGems[1]->getPosition().x;
+	pressedGems[1]->destY = pressedGems[1]->getPosition().y;
 
 	//time of current frame
 	Uint32 tcurrent = SDL_GetTicks();
@@ -40,11 +40,10 @@ void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Wind
 
 	while (!animation0Done && !animation1Done)
 	{
-		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[0]);
-		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[1]);
+		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, pressedGems[0]);
+		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, pressedGems[1]);
 
 		window->renderGame();
-		//render(gems);
 	}
 }
 
@@ -83,7 +82,6 @@ void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS], Window *window)
 		}
 		SDL_Delay(100);
 		window->renderGame();
-		//render(gems);
 	}
 }
 
@@ -110,66 +108,8 @@ void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS], Window *window)
 		if (!animationDone)
 		{
 			window->renderGame();
-			//render(gems);
 		}
 	}
-}
-
-void Animation::render(Gem gems[TOTAL_GEMS])
-{
-	//Clear screen
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-	SDL_RenderClear(renderer);
-
-	//Render background
-	backgroundTexture.render(0, 0, &backgroundClip);
-
-	std::string scoreString = std::to_string(score);
-	char const *scoreArray = scoreString.c_str();
-	//Render the score and the shadow
-	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
-	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
-	//Convert it to texture
-	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
-	SDL_Texture *scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
-	//Free the surfaces
-	SDL_FreeSurface(scoreSurface);
-	SDL_FreeSurface(scoreShadowSurface);
-	//Apply the score to the screen
-	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreGameShadowClip);
-	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreGameTextClip);
-
-	//Convert the multiplier from int to char*
-	std::string multiString = std::to_string(multiplier);
-	multiString += "x";
-	char const *multiArray = multiString.c_str();
-	//Render the multiplier and the shadow
-	SDL_Surface *multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
-	SDL_Surface *multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
-	//Convert it to texture
-	SDL_Texture *multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
-	SDL_Texture *multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
-	//Free the surfaces
-	SDL_FreeSurface(multiplierSurface);
-	SDL_FreeSurface(multiShadowSurface);
-	//Apply the multiplier to the screen	
-	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
-	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
-
-	//Render gems
-	for (int i = 0; i < TOTAL_GEMS; ++i)
-	{
-		gems[i].render(); //change to render with animation
-	}
-
-	//Update screen
-	SDL_RenderPresent(renderer);
-
-	//Free the textures
-	SDL_DestroyTexture(scoreTexture);
-	SDL_DestroyTexture(scoreShadowTexture);
-	SDL_DestroyTexture(multiplierTexture);
-	SDL_DestroyTexture(multiShadowTexture);
 }
 
 bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total, Gem* gem)

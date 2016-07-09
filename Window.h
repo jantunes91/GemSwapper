@@ -50,6 +50,7 @@ public:
 	//Show the window and start the game
 	void show();
 
+private:
 	//The window we'll be rendering to
 	SDL_Window* WindowInstance = NULL;
 
@@ -65,10 +66,10 @@ public:
 	//The QUIT button
 	Button quitButton;
 
-	//Buttons objects
+	//Gem objects
 	Gem gems[TOTAL_GEMS];
 
-	//Pressed Buttons
+	//Pressed gems
 	Gem *pressedGems[2];
 
 	//Board instance

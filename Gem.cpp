@@ -4,10 +4,10 @@
 
 Gem::Gem()
 {
-	mPosition.x = OFFSET_X;
-	mPosition.y = OFFSET_Y;
+	position.x = OFFSET_X;
+	position.y = OFFSET_Y;
 
-	mCurrentSprite = GEM_SPRITE_MOUSE_OUT;
+	currentSprite = GEM_SPRITE_MOUSE_OUT;
 
 	type = rand() % 5;
 
@@ -20,13 +20,13 @@ Gem::Gem()
 
 void Gem::setPosition(int x, int y)
 {
-	mPosition.x = x;
-	mPosition.y = y;
+	position.x = x;
+	position.y = y;
 }
 
 SDL_Point Gem::getPosition()
 {
-	return mPosition;
+	return position;
 }
 
 void Gem::setPressed(bool isPressed)
@@ -64,7 +64,12 @@ bool Gem::toUpdate()
 	return updatePosition;
 }
 
-void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
+void Gem::unselectTexture()
+{
+	currentSprite = GEM_SPRITE_MOUSE_OUT;
+}
+
+void Gem::handleEvent(SDL_Event* e, Gem* pressedGems[2])
 {
 	//If mouse event happened
 	if (e->type == SDL_MOUSEMOTION || e->type == SDL_MOUSEBUTTONDOWN || e->type == SDL_MOUSEBUTTONUP)
@@ -77,22 +82,22 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 		bool inside = true;
 
 		//Mouse is left of the gem
-		if (x < mPosition.x)
+		if (x < position.x)
 		{
 			inside = false;
 		}
 		//Mouse is right of the gem
-		else if (x > mPosition.x + GEM_WIDTH)
+		else if (x > position.x + GEM_WIDTH)
 		{
 			inside = false;
 		}
 		//Mouse above the gem
-		else if (y < mPosition.y)
+		else if (y < position.y)
 		{
 			inside = false;
 		}
 		//Mouse below the gem
-		else if (y > mPosition.y + GEM_HEIGHT)
+		else if (y > position.y + GEM_HEIGHT)
 		{
 			inside = false;
 		}
@@ -101,11 +106,11 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 		if (!inside)
 		{
 			if (pressed) {
-				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
+				currentSprite = GEM_SPRITE_MOUSE_DOWN;
 			}
 			else
 			{
-				mCurrentSprite = GEM_SPRITE_MOUSE_OUT;
+				currentSprite = GEM_SPRITE_MOUSE_OUT;
 			}
 		}
 		//Mouse is inside gem
@@ -117,7 +122,7 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 			case SDL_MOUSEMOTION:
 				if (!pressed)
 				{
-					mCurrentSprite = GEM_SPRITE_MOUSE_OVER_MOTION;
+					currentSprite = GEM_SPRITE_MOUSE_OVER_MOTION;
 				}
 				break;
 
@@ -125,12 +130,12 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 				//Play the sound effect
 				Mix_PlayChannel(-1, selectSound, 0);
 				//Change the sprite state
-				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
+				currentSprite = GEM_SPRITE_MOUSE_DOWN;
 				if (pressed)
 				{
 					//Removed the pressed tag
 					setPressed(false);
-					gPressedButtons[0] = NULL;
+					pressedGems[0] = NULL;
 					pressedCount--;
 					break;
 				}
@@ -138,18 +143,18 @@ void Gem::handleEvent(SDL_Event* e, Gem* gPressedButtons[2])
 				{
 					//Tag the gem as pressed
 					setPressed(true);
-					gPressedButtons[pressedCount] = this;
+					pressedGems[pressedCount] = this;
 					pressedCount++;
 					break;
 				}
 			case SDL_MOUSEBUTTONUP:
 				//Change the sprite state
-				mCurrentSprite = GEM_SPRITE_MOUSE_DOWN;
-				if (pressedCount == 1 && gPressedButtons[0] != this)
+				currentSprite = GEM_SPRITE_MOUSE_DOWN;
+				if (pressedCount == 1 && pressedGems[0] != this)
 				{
 					//Tag the gem as pressed
 					setPressed(true);
-					gPressedButtons[pressedCount] = this;
+					pressedGems[pressedCount] = this;
 					pressedCount++;
 					break;
 				}
@@ -169,26 +174,26 @@ void Gem::render()
 	//Show current gem sprite
 	if (type == 0)
 	{
-		color1SpriteSheetTexture.render(mPosition.x, mPosition.y, &color1SpriteClips[mCurrentSprite]);
+		color1SpriteSheetTexture.render(position.x, position.y, &color1SpriteClips[currentSprite]);
 	}
 
 	if (type == 1)
 	{
-		color2SpriteSheetTexture.render(mPosition.x, mPosition.y, &color2SpriteClips[mCurrentSprite]);
+		color2SpriteSheetTexture.render(position.x, position.y, &color2SpriteClips[currentSprite]);
 	}
 
 	if (type == 2)
 	{
-		color3SpriteSheetTexture.render(mPosition.x, mPosition.y, &color3SpriteClips[mCurrentSprite]);
+		color3SpriteSheetTexture.render(position.x, position.y, &color3SpriteClips[currentSprite]);
 	}
 
 	if (type == 3)
 	{
-		color4SpriteSheetTexture.render(mPosition.x, mPosition.y, &color4SpriteClips[mCurrentSprite]);
+		color4SpriteSheetTexture.render(position.x, position.y, &color4SpriteClips[currentSprite]);
 	}
 
 	if (type == 4)
 	{
-		color5SpriteSheetTexture.render(mPosition.x, mPosition.y, &color5SpriteClips[mCurrentSprite]);
+		color5SpriteSheetTexture.render(position.x, position.y, &color5SpriteClips[currentSprite]);
 	}
 }

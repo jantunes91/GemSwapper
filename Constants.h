@@ -4,7 +4,7 @@
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
 
-//Button constants
+//GEM constants
 const int GEM_WIDTH = 50;
 const int GEM_HEIGHT = 50;
 const int TOTAL_GEMS = 64;
