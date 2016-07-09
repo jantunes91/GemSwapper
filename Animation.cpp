@@ -128,6 +128,9 @@ void Animation::render(Gem gems[TOTAL_GEMS])
 	//Convert it to texture
 	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
 	scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+	//Free the surfaces
+	SDL_FreeSurface(scoreSurface);
+	SDL_FreeSurface(scoreShadowSurface);
 	//Apply the score to the screen
 	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreShadowClip);
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreTextClip);
@@ -142,6 +145,9 @@ void Animation::render(Gem gems[TOTAL_GEMS])
 	//Convert it to texture
 	multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
 	multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
+	//Free the surfaces
+	SDL_FreeSurface(multiplierSurface);
+	SDL_FreeSurface(multiShadowSurface);
 	//Apply the multiplier to the screen	
 	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
 	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
@@ -154,6 +160,12 @@ void Animation::render(Gem gems[TOTAL_GEMS])
 
 	//Update screen
 	SDL_RenderPresent(renderer);
+
+	//Free the textures
+	SDL_DestroyTexture(scoreTexture);
+	SDL_DestroyTexture(scoreShadowTexture);
+	SDL_DestroyTexture(multiplierTexture);
+	SDL_DestroyTexture(multiShadowTexture);
 }
 
 bool Animation::animate(Uint32 animation_start_time, Uint32 animation_time_total, Gem* gem)

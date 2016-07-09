@@ -23,7 +23,7 @@ bool init();
 bool loadMedia();
 
 //Frees media and shuts down SDL
-void close();
+void closeGame();
 
 //The window we'll be rendering to
 SDL_Window* Window = NULL;
@@ -351,6 +351,9 @@ void render()
 	//Convert it to texture
 	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
 	scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+	//Free the surfaces
+	SDL_FreeSurface(scoreSurface);
+	SDL_FreeSurface(scoreShadowSurface);
 	//Apply the score to the screen	
 	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreShadowClip);
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreTextClip);
@@ -365,6 +368,9 @@ void render()
 	//Convert it to texture
 	multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
 	multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
+	//Free the surfaces
+	SDL_FreeSurface(multiplierSurface);
+	SDL_FreeSurface(multiShadowSurface);
 	//Apply the multiplier to the screen	
 	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
 	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
@@ -377,9 +383,16 @@ void render()
 
 	//Update screen
 	SDL_RenderPresent(renderer);
+
+	//Free the textures
+	SDL_DestroyTexture(scoreTexture);
+	SDL_DestroyTexture(scoreShadowTexture);
+	SDL_DestroyTexture(multiplierTexture);
+	SDL_DestroyTexture(multiShadowTexture);
+
 }
 
-void close()
+void closeGame()
 {
 	//Free loaded images
 	color1SpriteSheetTexture.free();
@@ -410,6 +423,13 @@ void close()
 	Mix_CloseAudio();
 	TTF_Quit();
 	SDL_Quit();
+}
+
+void closeMenu()
+{
+	//Free loaded images
+	playSpriteSheetTexture.free();
+	menuTexture.free();
 }
 
 int main(int argc, char* args[])
@@ -457,6 +477,8 @@ int main(int argc, char* args[])
 				}
 				renderMenu();
 			}
+
+			closeMenu();
 
 			if (!quit)
 			{
@@ -511,7 +533,7 @@ int main(int argc, char* args[])
 	}
 
 	//Free resources and close SDL
-	close();
+	closeGame();
 
 	return 0;
 }
