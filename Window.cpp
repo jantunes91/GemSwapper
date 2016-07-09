@@ -167,7 +167,7 @@ bool Window::loadGameOver()
 	quitButton.setID("quit");
 
 	//Open the font
-	font = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 28);
+	font = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 100);
 
 	//If there was a problem loading the font
 	if (font == NULL)
@@ -177,11 +177,11 @@ bool Window::loadGameOver()
 	}
 	else
 	{
-		scoreGOverTextClip.y = 280;
-		scoreGameTextClip.h = 45;
+		scoreGOverTextClip.y = 380;
+		scoreGOverTextClip.h = 74;
 
-		scoreGameShadowClip.y = 285;
-		scoreGameShadowClip.h = 45;
+		scoreGOverShadowClip.y = 385;
+		scoreGOverShadowClip.h = 74;
 	}
 
 	return true;
@@ -328,23 +328,19 @@ bool Window::loadGame()
 	{
 		scoreGameTextClip.x = 65;
 		scoreGameTextClip.y = 260;
-		scoreGameTextClip.w = 100;
-		scoreGameTextClip.h = 45;
+		scoreGameTextClip.h = 28;
 
 		scoreGameShadowClip.x = 70;
-		scoreGameShadowClip.y = 265;
-		scoreGameShadowClip.w = 100;
-		scoreGameShadowClip.h = 45;
+		scoreGameShadowClip.y = 263;
+		scoreGameShadowClip.h = 28;
 
 		multiplierClip.x = 65;
 		multiplierClip.y = 370;
-		multiplierClip.w = 35;
-		multiplierClip.h = 45;
+		multiplierClip.h = 28;
 
 		multiShadowClip.x = 70;
-		multiShadowClip.y = 375;
-		multiShadowClip.w = 35;
-		multiShadowClip.h = 45;
+		multiShadowClip.y = 373;
+		multiShadowClip.h = 28;
 	}
 
 	//Set the correct positions for the gems
@@ -398,19 +394,24 @@ void Window::renderGameOver()
 	std::string scoreString = std::to_string(score);
 	int scoreLength = scoreString.length();
 	char const *scoreArray = scoreString.c_str();
+
 	//Render the score and the shadow
 	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
 	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+
 	//Convert it to texture
 	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
 	SDL_Texture *scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+
 	//Free the surfaces
 	SDL_FreeSurface(scoreSurface);
 	SDL_FreeSurface(scoreShadowSurface);
+
 	//Calculate clip dimensions
-	scoreGOverTextClip.x = 0;//SCREEN_WIDTH / 2 - 45 * (scoreLength / 2);
-	scoreGOverShadowClip.x = 0;// scoreGOverTextClip.x + 5;
-	scoreGOverTextClip.w = scoreGOverShadowClip.w = 45 * scoreLength;
+	scoreGOverTextClip.x = SCREEN_WIDTH / 2 - 57 * (scoreLength / 2);
+	scoreGOverShadowClip.x = scoreGOverTextClip.x + 5;
+	scoreGOverTextClip.w = scoreGOverShadowClip.w = 57 * scoreLength;
+
 	//Apply the score to the screen	
 	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreGOverShadowClip);
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreGOverTextClip);
@@ -434,33 +435,51 @@ void Window::renderGame()
 
 	//Convert the score from int to char*
 	std::string scoreString = std::to_string(score);
+	int scoreLength = scoreString.length();
 	char const *scoreArray = scoreString.c_str();
+
 	//Render the score and the shadow
 	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
 	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+
 	//Convert it to texture
 	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
 	SDL_Texture *scoreShadowTexture = SDL_CreateTextureFromSurface(renderer, scoreShadowSurface);
+
 	//Free the surfaces
 	SDL_FreeSurface(scoreSurface);
 	SDL_FreeSurface(scoreShadowSurface);
+
+	//Calculate clip dimensions
+	scoreGameTextClip.w = scoreGameShadowClip.w = 17 * scoreLength;
+
 	//Apply the score to the screen	
 	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreGameShadowClip);
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreGameTextClip);
 
+
+
 	//Convert the multiplier from int to char*
 	std::string multiString = std::to_string(multiplier);
 	multiString += "x";
+	int multiLength = multiString.length();
 	char const *multiArray = multiString.c_str();
+
 	//Render the multiplier and the shadow
 	SDL_Surface *multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
 	SDL_Surface *multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
+
 	//Convert it to texture
 	SDL_Texture *multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
 	SDL_Texture *multiShadowTexture = SDL_CreateTextureFromSurface(renderer, multiShadowSurface);
+
 	//Free the surfaces
 	SDL_FreeSurface(multiplierSurface);
 	SDL_FreeSurface(multiShadowSurface);
+
+	//Calculate clip dimensions
+	multiplierClip.w = multiShadowClip.w = 17 * multiLength;
+
 	//Apply the multiplier to the screen	
 	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
 	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
@@ -614,15 +633,16 @@ void Window::show()
 					if (pressedCount == 2)
 					{
 						board.swapGems(pressedGems, gems, this);
-						gameOver = !board.checkAvailableMoves(gems, this);
+						gameOver = board.checkAvailableMoves(gems, this);
 					}
 				}
 			}
 			renderGame();
 		}
+		closeGame();
 	}
 
-	//Load Menu
+	//Load Game Over Menu
 	if (!loadGameOver())
 	{
 		printf("Failed to load game over screen!\n");
@@ -658,5 +678,4 @@ void Window::show()
 	}
 
 	//Free resources and close SDL
-	closeGame();
 }
