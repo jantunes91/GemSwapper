@@ -34,7 +34,8 @@ Texture backgroundTexture;
 
 //Game Over background
 SDL_Rect gameoverClip;
-Texture gameoverTexture;
+Texture gameoverMovesTexture;
+Texture gameoverTimeTexture;
 
 //The music that will be played
 Mix_Music *music = NULL;
@@ -45,8 +46,9 @@ Mix_Chunk *sequence1 = NULL;
 Mix_Chunk *sequence2 = NULL;
 Mix_Chunk *sequence3 = NULL;
 
-//The font that's going to be used
-TTF_Font *font = NULL;
+//The fonts that are going to be used
+TTF_Font *scoreFont;
+TTF_Font *timerFont;
 
 //The text clips
 SDL_Rect scoreGameTextClip;
@@ -55,6 +57,8 @@ SDL_Rect scoreGOverTextClip;
 SDL_Rect scoreGOverShadowClip;
 SDL_Rect multiplierClip;
 SDL_Rect multiShadowClip;
+SDL_Rect timerClip;
+SDL_Rect timerShadowClip;
 
 //The text color
 SDL_Color textColor = { 0,0,0 };

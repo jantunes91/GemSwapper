@@ -40,7 +40,8 @@ extern Texture backgroundTexture;
 
 //Game Over background
 extern SDL_Rect gameoverClip;
-extern Texture gameoverTexture;
+extern Texture gameoverMovesTexture;
+extern Texture gameoverTimeTexture;
 
 //Background music
 extern Mix_Music *music;
@@ -51,8 +52,9 @@ extern Mix_Chunk *sequence1;
 extern Mix_Chunk *sequence2;
 extern Mix_Chunk *sequence3;
 
-//The font that's going to be used
-extern TTF_Font *font;
+//The fonts that are going to be used
+extern TTF_Font *scoreFont;
+extern TTF_Font *timerFont;
 
 //The text clips
 extern SDL_Rect scoreGameTextClip;
@@ -61,6 +63,8 @@ extern SDL_Rect scoreGOverTextClip;
 extern SDL_Rect scoreGOverShadowClip;
 extern SDL_Rect multiplierClip;
 extern SDL_Rect multiShadowClip;
+extern SDL_Rect timerClip;
+extern SDL_Rect timerShadowClip;
 
 //The text color
 extern SDL_Color textColor;

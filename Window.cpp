@@ -108,10 +108,10 @@ bool Window::loadMenu()
 
 bool Window::loadGameOver()
 {
-	//Load Game Over background image
-	if (!gameoverTexture.loadFromFile("Images/gameover.png", renderer))
+	//Load Game Over background images
+	if (!gameoverMovesTexture.loadFromFile("Images/gameovermoves.png", renderer))
 	{
-		printf("Failed to load gameover background texture!\n");
+		printf("Failed to load gameover by no moves background texture!\n");
 		return false;
 	}
 	else
@@ -119,6 +119,12 @@ bool Window::loadGameOver()
 		//Set where to render
 		gameoverClip.h = SCREEN_HEIGHT;
 		gameoverClip.w = SCREEN_WIDTH;
+	}
+
+	if (!gameoverTimeTexture.loadFromFile("Images/gameovertime.png", renderer))
+	{
+		printf("Failed to load gameover by time up background texture!\n");
+		return false;
 	}
 
 	//Load sprites for Play Again button
@@ -167,10 +173,10 @@ bool Window::loadGameOver()
 	quitButton.setID("quit");
 
 	//Open the font
-	font = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 100);
+	scoreFont = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 100);
 
 	//If there was a problem loading the font
-	if (font == NULL)
+	if (scoreFont == NULL)
 	{
 		printf("Failed to load the type font!\n");
 		return false;
@@ -316,12 +322,12 @@ bool Window::loadGame()
 	}
 
 	//Open the font
-	font = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 28);
+	scoreFont = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 28);
 
 	//If there was a problem loading the font
-	if (font == NULL)
+	if (scoreFont == NULL)
 	{
-		printf("Failed to load the type font!\n");
+		printf("Failed to load the score font!\n");
 		return false;
 	}
 	else
@@ -341,6 +347,28 @@ bool Window::loadGame()
 		multiShadowClip.x = 70;
 		multiShadowClip.y = 373;
 		multiShadowClip.h = 28;
+	}
+
+	//Open the font
+	timerFont = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 100);
+
+	//If there was a problem loading the font
+	if (timerFont == NULL)
+	{
+		printf("Failed to load the timer font!\n");
+		return false;
+	}
+	else
+	{
+		timerClip.x = 65;
+		timerClip.y = 500;
+		timerClip.w = 285;
+		timerClip.h = 74;
+
+		timerShadowClip.x = 70;
+		timerShadowClip.y = 505;
+		timerShadowClip.w = 285;
+		timerShadowClip.h = 74;
 	}
 
 	//Set the correct positions for the gems
@@ -375,15 +403,23 @@ void Window::renderMenu()
 	SDL_RenderPresent(renderer);
 }
 
-void Window::renderGameOver()
+void Window::renderGameOver(char *type)
 {
 	//Clear screen
 	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(renderer);
 
 	//Render background
-	gameoverTexture.render(0, 0, &gameoverClip);
+	if (type == "time")
+	{
+		gameoverTimeTexture.render(0, 0, &gameoverClip);
+	}
 
+	if (type == "moves")
+	{
+		gameoverMovesTexture.render(0, 0, &gameoverClip);
+	}
+	
 	//Render PLAY AGAIN button
 	playagainButton.render();
 
@@ -396,8 +432,8 @@ void Window::renderGameOver()
 	char const *scoreArray = scoreString.c_str();
 
 	//Render the score and the shadow
-	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
-	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+	SDL_Surface *scoreSurface = TTF_RenderText_Solid(scoreFont, scoreArray, textColor);
+	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(scoreFont, scoreArray, shadowColor);
 
 	//Convert it to texture
 	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
@@ -433,14 +469,15 @@ void Window::renderGame()
 	//Render background
 	backgroundTexture.render(0, 0, &backgroundClip);
 
+	////Render the score////
 	//Convert the score from int to char*
 	std::string scoreString = std::to_string(score);
 	int scoreLength = scoreString.length();
 	char const *scoreArray = scoreString.c_str();
 
 	//Render the score and the shadow
-	SDL_Surface *scoreSurface = TTF_RenderText_Solid(font, scoreArray, textColor);
-	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(font, scoreArray, shadowColor);
+	SDL_Surface *scoreSurface = TTF_RenderText_Solid(scoreFont, scoreArray, textColor);
+	SDL_Surface *scoreShadowSurface = TTF_RenderText_Solid(scoreFont, scoreArray, shadowColor);
 
 	//Convert it to texture
 	SDL_Texture *scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
@@ -457,8 +494,8 @@ void Window::renderGame()
 	SDL_RenderCopy(renderer, scoreShadowTexture, NULL, &scoreGameShadowClip);
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scoreGameTextClip);
 
-
-
+	
+	////Render the multiplier////
 	//Convert the multiplier from int to char*
 	std::string multiString = std::to_string(multiplier);
 	multiString += "x";
@@ -466,8 +503,8 @@ void Window::renderGame()
 	char const *multiArray = multiString.c_str();
 
 	//Render the multiplier and the shadow
-	SDL_Surface *multiplierSurface = TTF_RenderText_Solid(font, multiArray, textColor);
-	SDL_Surface *multiShadowSurface = TTF_RenderText_Solid(font, multiArray, shadowColor);
+	SDL_Surface *multiplierSurface = TTF_RenderText_Solid(scoreFont, multiArray, textColor);
+	SDL_Surface *multiShadowSurface = TTF_RenderText_Solid(scoreFont, multiArray, shadowColor);
 
 	//Convert it to texture
 	SDL_Texture *multiplierTexture = SDL_CreateTextureFromSurface(renderer, multiplierSurface);
@@ -484,6 +521,39 @@ void Window::renderGame()
 	SDL_RenderCopy(renderer, multiShadowTexture, NULL, &multiShadowClip);
 	SDL_RenderCopy(renderer, multiplierTexture, NULL, &multiplierClip);
 
+
+	////Render the timer////
+	//Convert the time in milliseconds to minutes and seconds
+	int tcurrent = SDL_GetTicks();
+	int seconds = (int)((MAX_GAME_TIME - (tcurrent - startTime)) / 1000) % 60;
+	int minutes = (int)(((MAX_GAME_TIME - (tcurrent - startTime)) / (1000 * 60)) % 60);
+
+	//Convert the result to char*
+	std::string minString = std::to_string(minutes);
+	std::string secString = std::to_string(seconds);
+	if (minString.length() == 1) { minString = "0" + minString; }
+	if (secString.length() == 1) { secString = "0" + secString; }
+	std::string resultTime = minString + ":" + secString;
+	char const *timeArray = resultTime.c_str();
+
+	//Render the resulting time
+	SDL_Surface *timerSurface = TTF_RenderText_Solid(timerFont, timeArray, textColor);
+	SDL_Surface *timerShadowSurface = TTF_RenderText_Solid(timerFont, timeArray, shadowColor);
+
+	//Convert it to texture
+	SDL_Texture *timerTexture = SDL_CreateTextureFromSurface(renderer, timerSurface);
+	SDL_Texture *timerShadowTexture = SDL_CreateTextureFromSurface(renderer, timerShadowSurface);
+
+	//Free the surface
+	SDL_FreeSurface(timerSurface);
+	SDL_FreeSurface(timerShadowSurface);
+
+	//Apply the timer to the screen	
+	SDL_RenderCopy(renderer, timerShadowTexture, NULL, &timerShadowClip);
+	SDL_RenderCopy(renderer, timerTexture, NULL, &timerClip);
+
+
+
 	//Render gems
 	for (int i = 0; i < TOTAL_GEMS; ++i)
 	{
@@ -498,6 +568,8 @@ void Window::renderGame()
 	SDL_DestroyTexture(scoreShadowTexture);
 	SDL_DestroyTexture(multiplierTexture);
 	SDL_DestroyTexture(multiShadowTexture);
+	SDL_DestroyTexture(timerTexture);
+	SDL_DestroyTexture(timerShadowTexture);
 
 }
 
@@ -511,18 +583,19 @@ void Window::closeMenu()
 void Window::closeGameOver()
 {
 	//Free the font that was used
-	TTF_CloseFont(font);
+	TTF_CloseFont(scoreFont);
 
 	//Free loaded images
 	playagainSpriteSheetTexture.free();
 	quitSpriteSheetTexture.free();
-	gameoverTexture.free();
+	gameoverMovesTexture.free();
 }
 
 void Window::closeGame()
 {
-	//Free the font that was used
-	TTF_CloseFont(font);
+	//Free the fonts that were used
+	TTF_CloseFont(scoreFont);
+	TTF_CloseFont(timerFont);
 
 	//Free loaded images
 	color1SpriteSheetTexture.free();
@@ -553,6 +626,7 @@ void Window::show()
 
 	//Game Over loop flag
 	bool gameOver = false;
+	char *type = NULL;
 
 	//Event handler
 	SDL_Event e;
@@ -591,6 +665,9 @@ void Window::show()
 	}
 	else
 	{
+		//Gets actual time
+		startTime = SDL_GetTicks();
+
 		if (!quitGame)
 		{
 			//render the initial board
@@ -617,6 +694,14 @@ void Window::show()
 		//While application is running
 		while (!quitGame && !gameOver)
 		{
+			//Check if timer ran out
+			Uint32 tcurrent = SDL_GetTicks();
+			if (tcurrent - startTime > MAX_GAME_TIME)
+			{
+				gameOver = true;
+				type = "time";
+			}
+
 			//Handle events on queue
 			while (SDL_PollEvent(&e) != 0)
 			{
@@ -633,9 +718,14 @@ void Window::show()
 					if (pressedCount == 2)
 					{
 						board.swapGems(pressedGems, gems, this);
-						gameOver = board.checkAvailableMoves(gems, this);
+						gameOver = !board.checkAvailableMoves(gems, this);
+						if (gameOver)
+						{
+							type = "moves";
+						}
 					}
 				}
+				Uint32 tcurrent = SDL_GetTicks();
 			}
 			renderGame();
 		}
@@ -672,7 +762,7 @@ void Window::show()
 
 				quitGame = quitButton.handleEvent(&e);
 			}
-			renderGameOver();
+			renderGameOver(type);
 		}
 		closeGameOver();
 	}

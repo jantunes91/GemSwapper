@@ -15,3 +15,6 @@ const int OFFSET_Y = 100;
 //Sprite constants
 const int GEM_SPRITE_TOTAL = 2;
 const int BUTTON_SPRITE_TOTAL = 3;
+
+//Time constants
+const int MAX_GAME_TIME = 300000; //300000 ms = 5 min

@@ -42,7 +42,7 @@ public:
 	void renderMenu();
 
 	//Renders the Game Over menu
-	void renderGameOver();
+	void renderGameOver(char *type);
 
 	//Renders the Game
 	void renderGame();
@@ -74,5 +74,8 @@ private:
 
 	//Board instance
 	Board board;
+
+	//The Game's start time
+	Uint32 startTime;
 };
 
