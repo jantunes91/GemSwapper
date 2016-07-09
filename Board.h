@@ -21,21 +21,21 @@ public:
 	bool isAdjacent(Gem *gem0, Gem *gem1);
 
 	//Swaps two gems
-	void swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS]);
+	void swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window);
 
 	//Checks if there's a sequence and removes it from the board
 	//with simple flag as true, it doesn't remove the sequence, plays the animation or updates the score
-	bool checkSequence(Gem gems[TOTAL_GEMS], bool simple);
+	bool checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple);
 
 	//Removes a previously found sequence, given it's end and it's lenght
 	void removeSequence(int x, int y, int lenght, int orientation, Gem gems[TOTAL_GEMS]);
 
 	void calculateScore(int lenght);
 
-	void dropDownGems(Gem gems[TOTAL_GEMS]);
+	void dropDownGems(Gem gems[TOTAL_GEMS], Window *window);
 
 	void generateNewGems(Gem gems[TOTAL_GEMS]);
 
-	bool checkAvailableMoves(Gem gems[TOTAL_GEMS]);
+	bool checkAvailableMoves(Gem gems[TOTAL_GEMS], Window *window);
 };
 

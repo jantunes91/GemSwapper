@@ -1,6 +1,9 @@
 #pragma once
 #include <SDL.h>
 #include "Gem.h"
+//#include "Window.h"
+
+class Window;
 
 class Animation
 {
@@ -13,11 +16,11 @@ public:
 	void rect_lerp(Gem *gem, float f);
 	
 	//handles the swap animation between two gems
-	void swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS]);
+	void swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window);
 
-	void sequenceRemoveAnim(Gem gems[TOTAL_GEMS]);
+	void sequenceRemoveAnim(Gem gems[TOTAL_GEMS], Window *window);
 
-	void dropGemsAnim(Gem gems[TOTAL_GEMS]);
+	void dropGemsAnim(Gem gems[TOTAL_GEMS], Window *window);
 
 	//renders the board
 	void render(Gem gems[TOTAL_GEMS]);

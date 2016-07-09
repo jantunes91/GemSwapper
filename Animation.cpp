@@ -1,4 +1,5 @@
 #include "Animation.h"
+#include "Window.h"
 
 #define SWAP_ANIMATION_TIME 300
 #define COLUMN_DROP_ANIMATION_TIME 1000
@@ -18,7 +19,7 @@ void Animation::rect_lerp(Gem *gem, float f) {
 		(float)gem->origY * t + (float)gem->destY * f);
 }
 
-void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
+void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window)
 {
 	//set the correct origin point values
 	gPressedButtons[0]->origX = gPressedButtons[1]->getPosition().x;
@@ -42,11 +43,12 @@ void Animation::swapGemsAnim(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[0]);
 		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, gPressedButtons[1]);
 
-		render(gems);
+		window->renderGame();
+		//render(gems);
 	}
 }
 
-void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS])
+void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS], Window *window)
 {
 	bool removed[TOTAL_GEMS];
 
@@ -80,11 +82,12 @@ void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS])
 			}
 		}
 		SDL_Delay(100);
-		render(gems);
+		window->renderGame();
+		//render(gems);
 	}
 }
 
-void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS])
+void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS], Window *window)
 {
 	bool animationDone = false;
 	int tcurrent = SDL_GetTicks();
@@ -106,7 +109,8 @@ void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS])
 		}
 		if (!animationDone)
 		{
-			render(gems);
+			window->renderGame();
+			//render(gems);
 		}
 	}
 }

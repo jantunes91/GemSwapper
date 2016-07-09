@@ -1,4 +1,5 @@
 #include "Board.h"
+#include "Window.h"
 
 Animation anim;
 
@@ -26,7 +27,7 @@ bool Board::isAdjacent(Gem *gem0, Gem *gem1)
 	}
 }
 
-void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
+void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS], Window *window)
 {
 	if (!isAdjacent(gPressedButtons[0], gPressedButtons[1]))
 	{
@@ -47,13 +48,13 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 		gPressedButtons[1]->setType(gem0type);
 
 		//animate the swap
-		anim.swapGemsAnim(gPressedButtons, gems);
+		anim.swapGemsAnim(gPressedButtons, gems, window);
 
 		//swap the positions
 		gPressedButtons[0]->setPosition(gem0Position.x, gem0Position.y);
 		gPressedButtons[1]->setPosition(gem1Position.x, gem1Position.y);
 
-		if (!checkSequence(gems,false)) //if there's no sequence, revert the swap
+		if (!checkSequence(gems, window, false)) //if there's no sequence, revert the swap
 		{
 			gem0Position = gPressedButtons[0]->getPosition();
 			gem1Position = gPressedButtons[1]->getPosition();
@@ -65,7 +66,7 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 			gPressedButtons[1]->setType(gem0type);
 
 			//animate the swap
-			anim.swapGemsAnim(gPressedButtons, gems);
+			anim.swapGemsAnim(gPressedButtons, gems, window);
 
 			//swap the positions
 			gPressedButtons[0]->setPosition(gem0Position.x, gem0Position.y);
@@ -73,10 +74,10 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 		}
 		else
 		{
-			dropDownGems(gems);
-			while (checkSequence(gems,false))
+			dropDownGems(gems, window);
+			while (checkSequence(gems, window, false))
 			{
-				dropDownGems(gems);
+				dropDownGems(gems, window);
 			}
 		}
 		multiplier = 1;
@@ -86,7 +87,7 @@ void Board::swapGems(Gem *gPressedButtons[2], Gem gems[TOTAL_GEMS])
 	}
 }
 
-bool Board::checkSequence(Gem gems[TOTAL_GEMS], bool simple)
+bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple)
 {
 	bool sequenceFound = false;
 
@@ -189,7 +190,7 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS], bool simple)
 
 	if (sequenceFound && !simple)
 	{
-		anim.sequenceRemoveAnim(gems);
+		anim.sequenceRemoveAnim(gems, window);
 	}
 
 	return sequenceFound;
@@ -257,7 +258,7 @@ void Board::calculateScore(int lenght)
 	multiplier++;
 }
 
-void Board::dropDownGems(Gem gems[TOTAL_GEMS])
+void Board::dropDownGems(Gem gems[TOTAL_GEMS], Window *window)
 {
 	int emptySpacesPerColumn[8] = { 0 };
 	for (int x = 0; x < 8; x++)
@@ -327,7 +328,7 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS])
 	generateNewGems(gems);
 
 	//Play the animation
-	anim.dropGemsAnim(gems);
+	anim.dropGemsAnim(gems, window);
 	
 	//fix the positions and types
 	for (int x = 0; x < 8; x++)
@@ -365,7 +366,7 @@ void Board::generateNewGems(Gem gems[TOTAL_GEMS])
 	}
 }
 
-bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS])
+bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS], Window *window)
 {
 	bool result = false;
 
@@ -405,7 +406,7 @@ bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS])
 			tempGems[(x + 1) + y * 8].setType(tempType);
 
 			//Check if there's a sequence
-			result = checkSequence(tempGems, true);
+			result = checkSequence(tempGems, window, true);
 			if (result)
 			{
 				return result;
@@ -433,7 +434,7 @@ bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS])
 			tempGems[x + ( y + 1) * 8].setType(tempType);
 
 			//Check if there's a sequence
-			result = checkSequence(tempGems, true);
+			result = checkSequence(tempGems, window, true);
 			if (result)
 			{
 				return result;
