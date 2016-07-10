@@ -9,7 +9,7 @@ Gem::Gem()
 
 	currentSprite = GEM_SPRITE_MOUSE_OUT;
 
-	type = rand() % 5;
+	type = 0;
 
 	removed = false;
 

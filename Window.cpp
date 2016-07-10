@@ -377,6 +377,7 @@ bool Window::loadGame()
 		for (int x = 0; x < 8; x++)
 		{
 			gems[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+			gems[x + y * 8].setType(rand() % 5);
 			//gems[x + y * 8].origX = gems[x + y * 8].getPosition().x;
 			//gems[x + y * 8].origY = (y - 8) * OFFSET_MULTIPLIER + OFFSET_Y;
 			gems[x + y * 8].destX = gems[x + y * 8].getPosition().x;
@@ -615,157 +616,162 @@ void Window::closeGame()
 
 void Window::show()
 {
-	//Seed for the random function
-	srand((unsigned)time(NULL));
+	bool keepPlaying = true;
 
-	//Menu loop flag
-	bool playGame = false;
-
-	//Game loop flag
-	bool quitGame = false;
-
-	//Game Over loop flag
-	bool gameOver = false;
-	char *type = NULL;
-
-	//Event handler
-	SDL_Event e;
-
-	//Load Menu
-	if (!loadMenu())
+	while (keepPlaying)
 	{
-		printf("Failed to load menu!\n");
-	}
-	else
-	{
-		//Menu loop
-		while (!playGame)
+		//Seed for the random function
+		srand((unsigned)time(NULL));
+
+		//Menu loop flag
+		bool playGame = false;
+
+		//Game loop flag
+		bool quitGame = false;
+
+		//Game Over loop flag
+		bool gameOver = false;
+		char *type = NULL;
+		bool playAgain = false;
+
+		//Event handler
+		SDL_Event e;
+
+		//Load Menu
+		if (!loadMenu())
 		{
-			while (SDL_PollEvent(&e) != 0)
-			{
-				//User requests quit
-				if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
-				{
-					quitGame = true;
-					playGame = true;
-					break;
-				}
-
-				playGame = playButton.handleEvent(&e);
-			}
-			renderMenu();
+			printf("Failed to load menu!\n");
 		}
-		closeMenu();
-	}
-
-	//Load Game
-	if (!loadGame())
-	{
-		printf("Failed to load media!\n");
-	}
-	else
-	{
-		//Gets actual time
-		startTime = SDL_GetTicks();
-
-		if (!quitGame)
+		else
 		{
-			//render the initial board
-			renderGame();
-
-			//play the background music on loop
-			Mix_PlayMusic(music, -1);
-
-			//this delay is just for eventual sequences on the initial
-			//board to not vanish right when we load the game
-			SDL_Delay(500);
-
-			//clear initial sequences and drop new gems
-			//loop only stops when there's no more sequences to clear
-			while (board.checkSequence(gems, this, false))
+			//Menu loop
+			while (!playGame)
 			{
-				board.dropDownGems(gems, this);
-			}
-			quitGame = !board.checkAvailableMoves(gems, this);
-			multiplier = 1;
-		}
-
-
-		//While application is running
-		while (!quitGame && !gameOver)
-		{
-			//Check if timer ran out
-			Uint32 tcurrent = SDL_GetTicks();
-			if (tcurrent - startTime > MAX_GAME_TIME)
-			{
-				gameOver = true;
-				type = "time";
-			}
-
-			//Handle events on queue
-			while (SDL_PollEvent(&e) != 0)
-			{
-				//User requests quit
-				if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
+				while (SDL_PollEvent(&e) != 0)
 				{
-					quitGame = true;
-				}
-
-				//Handle gem events
-				for (int i = 0; i < TOTAL_GEMS; ++i)
-				{
-					gems[i].handleEvent(&e, pressedGems);
-					if (pressedCount == 2)
+					//User requests quit
+					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
 					{
-						board.swapGems(pressedGems, gems, this);
-						gameOver = !board.checkAvailableMoves(gems, this);
-						if (gameOver)
+						quitGame = true;
+						playGame = true;
+						break;
+					}
+
+					playGame = playButton.handleEvent(&e);
+				}
+				renderMenu();
+			}
+			closeMenu();
+		}
+
+		//Load Game
+		if (!loadGame())
+		{
+			printf("Failed to load media!\n");
+		}
+		else
+		{
+			//Gets actual time
+			startTime = SDL_GetTicks();
+
+			if (!quitGame)
+			{
+				//render the initial board
+				renderGame();
+
+				//play the background music on loop
+				Mix_PlayMusic(music, -1);
+
+				//this delay is just for eventual sequences on the initial
+				//board to not vanish right when we load the game
+				SDL_Delay(500);
+
+				//clear initial sequences and drop new gems
+				//loop only stops when there's no more sequences to clear
+				while (board.checkSequence(gems, this, false))
+				{
+					board.dropDownGems(gems, this);
+				}
+				quitGame = !board.checkAvailableMoves(gems, this);
+				multiplier = 1;
+			}
+
+
+			//While application is running
+			while (!quitGame && !gameOver)
+			{
+				//Check if timer ran out
+				Uint32 tcurrent = SDL_GetTicks();
+				if (tcurrent - startTime > MAX_GAME_TIME)
+				{
+					gameOver = true;
+					type = "time";
+				}
+
+				//Handle events on queue
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
+					{
+						quitGame = true;
+					}
+
+					//Handle gem events
+					for (int i = 0; i < TOTAL_GEMS; ++i)
+					{
+						gems[i].handleEvent(&e, pressedGems);
+						if (pressedCount == 2)
 						{
-							type = "moves";
+							board.swapGems(pressedGems, gems, this);
+							gameOver = !board.checkAvailableMoves(gems, this);
+							if (gameOver)
+							{
+								type = "moves";
+							}
 						}
 					}
+					Uint32 tcurrent = SDL_GetTicks();
 				}
-				Uint32 tcurrent = SDL_GetTicks();
+				renderGame();
 			}
-			renderGame();
+			closeGame();
 		}
-		closeGame();
-	}
 
-	//Load Game Over Menu
-	if (!loadGameOver())
-	{
-		printf("Failed to load game over screen!\n");
-	}
-	else
-	{
-		//Menu loop
-		while (gameOver && !quitGame)
+		//Load Game Over Menu
+		if (!loadGameOver())
 		{
-			while (SDL_PollEvent(&e) != 0)
-			{
-				//User requests quit
-				if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
-				{
-					quitGame = true;
-					break;
-				}
-				bool playAgain = playagainButton.handleEvent(&e);
-				if (playAgain)
-				{
-					quitGame = true;
-					//closeGameOver();
-					//closeGame();
-					//call main function again
-					break;
-				}
-
-				quitGame = quitButton.handleEvent(&e);
-			}
-			renderGameOver(type);
+			printf("Failed to load game over screen!\n");
 		}
-		closeGameOver();
-	}
+		else
+		{
+			//Menu loop
+			while (gameOver && !quitGame && !playAgain)
+			{
+				while (SDL_PollEvent(&e) != 0)
+				{
+					//User requests quit
+					if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE)
+					{
+						quitGame = true;
+						break;
+					}
+					if (playagainButton.handleEvent(&e))
+					{
+						playAgain = true;
+						//closeGameOver();
+						//closeGame();
+						//call main function again
+						break;
+					}
 
-	//Free resources and close SDL
+					quitGame = quitButton.handleEvent(&e);
+				}
+				renderGameOver(type);
+			}
+			closeGameOver();
+		}
+
+		keepPlaying = !quitGame;
+	}
 }
