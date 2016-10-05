@@ -1,5 +1,14 @@
 ﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (LazyFoo.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Variables.cpp
+  Generating Code...
+  Compiling...
+  main.cpp
   Window.cpp
+  Texture.cpp
   Gem.cpp
+  Button.cpp
+  Board.cpp
+  Animation.cpp
+c:\users\antunes\documents\visual studio 2015\projects\lazyfoo\lazyfoo\animation.cpp(19): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating Code...
   LazyFoo.vcxproj -> C:\Users\Antunes\Documents\Visual Studio 2015\Projects\LazyFoo\Debug\GemSwapper.exe

@@ -46,12 +46,12 @@ public:
 	//Sets the sprite to unselected
 	void unselectTexture();
 
-	//replace by SDL_Point origin
+	//The animation origin point
 	int origX;
 
 	int origY;
 
-	//replace by SDL_Point destiny
+	//The animation destination point
 	int destX;
 
 	int destY;
