@@ -79,5 +79,5 @@ extern int multiplier;
 //The window renderer
 extern SDL_Renderer *renderer;
 
-//Number of pressed gems
+//
 extern int pressedCount;

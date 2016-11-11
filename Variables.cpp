@@ -73,7 +73,7 @@ int multiplier = 0;
 //The window renderer
 SDL_Renderer *renderer = NULL;
 
-//Number of pressed gems
+//
 int pressedCount = 0;
 
 //Stores all the gems
