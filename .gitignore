@@ -1,3 +1,9 @@
 Debug/
-*.vcxproj
-*.vcxproj.filters
+GemSwapper/
+Images/batataMOD
+msvcrt.pdb
+*.zip
+maingood.cpp
+GemSwapper.sln
+*.psd
+*.xcf
