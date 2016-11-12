@@ -101,7 +101,7 @@ bool Window::loadMenu()
 	//Set the correct position for the buttons
 	playButton.setPosition(376, 500);
 	playButton.setDimensions(271, 92);
-	playButton.setID("play");
+	playButton.setID(BUTTON_PLAY);
 
 	return true;
 }
@@ -166,11 +166,11 @@ bool Window::loadGameOver()
 	//Set the correct position for the buttons
 	playagainButton.setPosition(78, 572);
 	playagainButton.setDimensions(574, 101);
-	playagainButton.setID("playagain");
+	playagainButton.setID(BUTTON_PLAYAGAIN);
 
 	quitButton.setPosition(707, 572);
 	quitButton.setDimensions(247, 101);
-	quitButton.setID("quit");
+	quitButton.setID(BUTTON_QUIT);
 
 	//Open the font
 	scoreFont = TTF_OpenFont("Fonts/EndlessBossBattle.ttf", 100);

@@ -12,6 +12,13 @@ enum ButtonSprite
 	BUTTON_SPRITE_MOUSE_DOWN = 2,
 };
 
+enum ButtonID
+{
+	BUTTON_PLAY = 0,
+	BUTTON_PLAYAGAIN =1,
+	BUTTON_QUIT = 2,
+};
+
 class Button
 {
 public:
@@ -29,10 +36,10 @@ public:
 	SDL_Point getPosition();
 	
 	//Returns the button ID
-	char* getID();
+	int getID();
 
 	//Sets the button ID
-	void setID(char* tempID);
+	void setID(int tempID);
 
 	//Handles mouse event
 	bool handleEvent(SDL_Event* e);
@@ -51,6 +58,6 @@ private:
 	//Currently used global sprite
 	ButtonSprite currentSprite;
 
-	char* id;
+	int id;
 };
 

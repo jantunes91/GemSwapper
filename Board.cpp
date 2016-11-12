@@ -17,27 +17,24 @@ bool Board::isAdjacent(Gem *gem0, Gem *gem1)
 	if (gem1->getPosition().x == gem0->getPosition().x + OFFSET_MULTIPLIER && gem1->getPosition().y == gem0->getPosition().y ||
 		gem1->getPosition().x == gem0->getPosition().x - OFFSET_MULTIPLIER && gem1->getPosition().y == gem0->getPosition().y ||
 		gem1->getPosition().y == gem0->getPosition().y + OFFSET_MULTIPLIER && gem1->getPosition().x == gem0->getPosition().x ||
-		gem1->getPosition().y == gem0->getPosition().y - OFFSET_MULTIPLIER && gem1->getPosition().x == gem0->getPosition().x)
-	{
+		gem1->getPosition().y == gem0->getPosition().y - OFFSET_MULTIPLIER && gem1->getPosition().x == gem0->getPosition().x) {
 		return true;
 	}
-	else
-	{
+	else {
 		return false;
 	}
 }
 
 void Board::swapGems(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 {
-	if (!isAdjacent(pressedGems[0], pressedGems[1]))
-	{
+	//if the selected gems are not adjacent, deselect the first one and only select the second
+	if (!isAdjacent(pressedGems[0], pressedGems[1])) {
 		pressedGems[0]->setPressed(false);
 		pressedGems[0] = pressedGems[1];
 		pressedCount = 1;
 		return;
 	}
-	else
-	{
+	else {
 		SDL_Point gem0Position = pressedGems[0]->getPosition();
 		SDL_Point gem1Position = pressedGems[1]->getPosition();
 		int gem0type = pressedGems[0]->getType();
@@ -57,8 +54,7 @@ void Board::swapGems(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 		pressedGems[0]->unselectTexture();
 		pressedGems[1]->unselectTexture();
 
-		if (!checkSequence(gems, window, false)) //if there's no sequence, revert the swap
-		{
+		if (!checkSequence(gems, window, false)) { //if there's no sequence, revert the swap
 			gem0Position = pressedGems[0]->getPosition();
 			gem1Position = pressedGems[1]->getPosition();
 			gem0type = pressedGems[0]->getType();
@@ -75,14 +71,14 @@ void Board::swapGems(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 			pressedGems[0]->setPosition(gem0Position.x, gem0Position.y);
 			pressedGems[1]->setPosition(gem1Position.x, gem1Position.y);
 		}
-		else
-		{
+		else {
 			dropDownGems(gems, window);
-			while (checkSequence(gems, window, false))
-			{
+			//we want to make sure we handle all the sequences that may result from the swap
+			while (checkSequence(gems, window, false)) {
 				dropDownGems(gems, window);
 			}
 		}
+		//after the swap is done, revert to default values
 		multiplier = 1;
 		pressedGems[0]->setPressed(false);
 		pressedGems[1]->setPressed(false);
@@ -90,7 +86,8 @@ void Board::swapGems(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *window)
 	}
 }
 
-bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple)
+//the justCheck flag tells if the sequence is to be removed or simply checked for existence
+bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool justCheck)
 {
 	bool sequenceFound = false;
 
@@ -98,43 +95,32 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple)
 	int count = 0;
 	int location = -1;
 	int type = -2;
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			if (x == 0 && gems[x + y * 8].getType()!=-1)
-			{
+	for (int y = 0; y < COLUMN_SIZE; y++) {
+		for (int x = 0; x < LINE_SIZE; x++) {
 
-				type = gems[x + y * 8].getType();
+			if (x == 0) {
+				type = gems[x + y * COLUMN_SIZE].getType();
 				count = 1;
 			}
-			else
-			{
-				if (gems[x + y * 8].getType() == type && gems[x + y * 8].getType() != -1)
-				{
+			else {
+				if (gems[x + y * COLUMN_SIZE].getType() == type ) {
 					count++;
-					if (count > 2) {
-						location = x;
-					}
+					if (count >= MIN_SEQUENCE_SIZE) { location = x; }
 				}
-				else
-				{
-					if (count > 2 && gems[x + y * 8].getType() != -1) {
-						if (!simple)
-						{
+				else {
+					if (count >= MIN_SEQUENCE_SIZE) {
+						if (!justCheck)	{
 							removeSequence(location, y, count, 0, gems);
 							calculateScore(count);
 						}
 						sequenceFound = true;
 					}
-					type = gems[x + y * 8].getType();
+					type = gems[x + y * COLUMN_SIZE].getType();
 					count = 1;
 				}
 			}
-			if (x == 7 && count > 2)
-			{
-				if (!simple)
-				{
+			if (x == LINE_SIZE - 1 && count >= MIN_SEQUENCE_SIZE) {
+				if (!justCheck) {
 					removeSequence(location, y, count, 0, gems);
 					calculateScore(count);
 				}
@@ -147,42 +133,34 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple)
 	count = 0;
 	location = -1;
 	type = -2;
-	for (int i = 0; i < 8; i++)
-	{
-		for (int j = 0; j < 8; j++)
-		{
-			if (j == 0 && gems[i + j * 8].getType() != -1)
-			{
-				type = gems[i + j * 8].getType();
+	for (int i = 0; i < LINE_SIZE; i++) {
+		for (int j = 0; j < COLUMN_SIZE; j++) {
+
+			if (j == 0)	{
+				type = gems[i + j * COLUMN_SIZE].getType();
 				count = 1;
 			}
-			else
-			{
-				if (gems[i + j * 8].getType() == type && gems[i + j * 8].getType() != -1 )
-				{
+			else {
+				if (gems[i + j * COLUMN_SIZE].getType() == type) {
 					count++;
-					if (count > 2) {
+					if (count >= MIN_SEQUENCE_SIZE) {
 						location = j;
 					}
 				}
-				else
-				{
-					if (count > 2 && gems[i + j * 8].getType() != -1) {
-						if (!simple)
-						{
+				else {
+					if (count >= MIN_SEQUENCE_SIZE) {
+						if (!justCheck) {
 							removeSequence(i, location, count, 1, gems);
 							calculateScore(count);
 						}
 						sequenceFound = true;
 					}
-					type = gems[i + j * 8].getType();
+					type = gems[i + j * COLUMN_SIZE].getType();
 					count = 1;
 				}
 			}
-			if (j == 7 && count > 2 && gems[i + j * 8].getType() != -1)
-			{
-				if (!simple)
-				{
+			if (j == COLUMN_SIZE - 1 && count >= MIN_SEQUENCE_SIZE) {
+				if (!justCheck) {
 					removeSequence(i, location, count, 1, gems);
 					calculateScore(count);
 				}
@@ -191,29 +169,22 @@ bool Board::checkSequence(Gem gems[TOTAL_GEMS], Window *window, bool simple)
 		}
 	}
 
-	if (sequenceFound && !simple)
-	{
-		anim.sequenceRemoveAnim(gems, window);
-	}
+	if (sequenceFound && !justCheck) { anim.sequenceRemoveAnim(gems, window); }
 
 	return sequenceFound;
 }
 
-//0 = horizontal; 1 = vertical
+
 void Board::removeSequence(int x, int y, int lenght, int orientation, Gem gems[TOTAL_GEMS])
 {
-	if (orientation == 0)
-	{
-		for (int remove = x; remove > x - lenght; remove--)
-		{
-			gems[remove + y * 8].setRemoved(true);
+	if (orientation == HORIZONTAL) {
+		for (int remove = x; remove > x - lenght; remove--) {
+			gems[remove + y * COLUMN_SIZE].setRemoved(true);
 		}
 	}
-	else
-	{
-		for (int remove = y; remove > y - lenght; remove--)
-		{
-			gems[x + remove * 8].setRemoved(true);
+	else {
+		for (int remove = y; remove > y - lenght; remove--) {
+			gems[x + remove * COLUMN_SIZE].setRemoved(true);
 		}
 	}
 
@@ -264,19 +235,15 @@ void Board::calculateScore(int lenght)
 void Board::dropDownGems(Gem gems[TOTAL_GEMS], Window *window)
 {
 	int emptySpacesPerColumn[8] = { 0 };
-	for (int x = 0; x < 8; x++)
-	{
+	for (int x = 0; x < LINE_SIZE; x++) {
 		// We go from the bottom up
-		for (int y = 7; y >= 0; y--)
-		{
+		for (int y = COLUMN_SIZE - 1; y >= 0; y--) {
 			// If the current gem is empty, every gem above it should fall one position
-			if (gems[x + y * 8].isRemoved())
-			{
+			if (gems[x + y * COLUMN_SIZE].isRemoved()) {
 				emptySpacesPerColumn[x]++;
-				for (int k = y - 1; k >= 0; k--)
-				{
-					gems[x + k * 8].setToUpdate(true);
-					gems[x + k * 8].updateDrop++;
+				for (int k = y - 1; k >= 0; k--) {
+					gems[x + k * COLUMN_SIZE].setToUpdate(true);
+					gems[x + k * COLUMN_SIZE].updateDrop++;
 					int updatedrop22 = gems[2 + 2 * 8].updateDrop;
 				}
 			}
@@ -285,43 +252,37 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS], Window *window)
 
 	// Now that each gem has its new position in their updateDrop property,
 	// let's set the correct variables for the animation process
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 7; y >= 0; y--)
-		{
+	for (int x = 0; x < LINE_SIZE; x++) {
+		for (int y = 7; y >= 0; y--) {
 			int newGemOffset = -1;
 			// If the gem is not empty and has to fall
-			if (gems[x + y * 8].toUpdate() == true && gems[x + y * 8].isRemoved() == false)
-			{
-				int y0 = gems[x + y * 8].updateDrop;
+			if (gems[x + y * COLUMN_SIZE].toUpdate() == true && gems[x + y * COLUMN_SIZE].isRemoved() == false) {
+				int y0 = gems[x + y * COLUMN_SIZE].updateDrop;
 
 				//set the variables for the animation process on the destiny position
 				gems[x + (y + y0) * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
 				gems[x + (y + y0) * 8].origY = y * OFFSET_MULTIPLIER + OFFSET_Y;
 
 				////swap the piece with the respective empty space
-				gems[x + (y + y0) * 8].setType(gems[x + y * 8].getType());
-				gems[x + y * 8].setType(-1);
+				gems[x + (y + y0) * 8].setType(gems[x + y * COLUMN_SIZE].getType());
+				gems[x + y * COLUMN_SIZE].setType(-1);
 				gems[x + (y + y0) * 8].setRemoved(false);
 				gems[x + (y + y0) * 8].setToUpdate(true);
-				gems[x + y * 8].setRemoved(true);
+				gems[x + y * COLUMN_SIZE].setRemoved(true);
 
 			}
 		}
 	}
 
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 7; y >= 0; y--)
-		{
+	for (int x = 0; x < LINE_SIZE; x++) {
+		for (int y = COLUMN_SIZE - 1; y >= 0; y--) {
 			int newGemOffset = -1;
 			// If the gem is removed
-			if (gems[x + y * 8].isRemoved())
-			{
+			if (gems[x + y * COLUMN_SIZE].isRemoved()) {
 				//set the variables for the animation process on the origin position for a new piece to fall
-				gems[x + y * 8].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
-				gems[x + y * 8].origY = newGemOffset * OFFSET_MULTIPLIER + OFFSET_Y;
-				gems[x + y * 8].updateDrop = -newGemOffset;
+				gems[x + y * COLUMN_SIZE].origX = x * OFFSET_MULTIPLIER + OFFSET_X;
+				gems[x + y * COLUMN_SIZE].origY = newGemOffset * OFFSET_MULTIPLIER + OFFSET_Y;
+				gems[x + y * COLUMN_SIZE].updateDrop = -newGemOffset;
 				newGemOffset--;
 			}
 		}
@@ -334,20 +295,17 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS], Window *window)
 	anim.dropGemsAnim(gems, window);
 	
 	//fix the positions and types
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 7; y >= 0; y--)
-		{
+	for (int x = 0; x < LINE_SIZE; x++) {
+		for (int y = COLUMN_SIZE - 1; y >= 0; y--) {
 			// If the gem is not empty and has to fall
-			if (gems[x + y * 8].toUpdate() == true && gems[x + y * 8].isRemoved() == false)
-			{
+			if (gems[x + y * COLUMN_SIZE].toUpdate() == true && gems[x + y * COLUMN_SIZE].isRemoved() == false) {
 
 				////fix the position
-				gems[x + y * 8].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
+				gems[x + y * COLUMN_SIZE].setPosition(x * OFFSET_MULTIPLIER + OFFSET_X, y * OFFSET_MULTIPLIER + OFFSET_Y);
 
 				////revert variables to default values
-				gems[x + y * 8].setToUpdate(false);
-				gems[x + y * 8].updateDrop = 0;
+				gems[x + y * COLUMN_SIZE].setToUpdate(false);
+				gems[x + y * COLUMN_SIZE].updateDrop = 0;
 			}
 		}
 	}
@@ -355,15 +313,15 @@ void Board::dropDownGems(Gem gems[TOTAL_GEMS], Window *window)
 
 void Board::generateNewGems(Gem gems[TOTAL_GEMS])
 {
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < LINE_SIZE; x++)
 	{
-		for (int y = 7; y >= 0; y--)
+		for (int y = COLUMN_SIZE - 1; y >= 0; y--)
 		{
-			if (gems[x + y * 8].isRemoved())
+			if (gems[x + y * COLUMN_SIZE].isRemoved())
 			{
-				gems[x + y * 8].setType(rand() % 5);
-				gems[x + y * 8].setRemoved(false);
-				gems[x + y * 8].setToUpdate(true);
+				gems[x + y * COLUMN_SIZE].setType(rand() % 5);
+				gems[x + y * COLUMN_SIZE].setRemoved(false);
+				gems[x + y * COLUMN_SIZE].setToUpdate(true);
 			}
 		}
 	}
@@ -379,34 +337,34 @@ bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS], Window *window)
 	Gem tempGems[TOTAL_GEMS];
 
 	//Make a copy of the gems board
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < LINE_SIZE; x++)
 	{
-		for (int y = 0; y < 8; y++)
+		for (int y = 0; y < COLUMN_SIZE; y++)
 		{
-			tempGems[x + y * 8] = gems[x + y * 8];
+			tempGems[x + y * COLUMN_SIZE] = gems[x + y * COLUMN_SIZE];
 		}
 	}
 
 	int tempType;
 
 	//Test horizontal swaps
-	for (int x = 0; x < 7; x++)
+	for (int x = 0; x < LINE_SIZE - 1; x++)
 	{
-		for (int y = 0; y < 8; y++)
+		for (int y = 0; y < COLUMN_SIZE; y++)
 		{
 			//Make a copy of the gems board
-			for (int x = 0; x < 8; x++)
+			for (int x = 0; x < LINE_SIZE; x++)
 			{
-				for (int y = 0; y < 8; y++)
+				for (int y = 0; y < COLUMN_SIZE; y++)
 				{
-					tempGems[x + y * 8] = gems[x + y * 8];
+					tempGems[x + y * COLUMN_SIZE] = gems[x + y * COLUMN_SIZE];
 				}
 			}
 
 			//Make swap
-			tempType = tempGems[x + y * 8].getType();
-			tempGems[x + y * 8].setType(tempGems[(x + 1) + y * 8].getType());
-			tempGems[(x + 1) + y * 8].setType(tempType);
+			tempType = tempGems[x + y * COLUMN_SIZE].getType();
+			tempGems[x + y * COLUMN_SIZE].setType(tempGems[(x + 1) + y * COLUMN_SIZE].getType());
+			tempGems[(x + 1) + y * COLUMN_SIZE].setType(tempType);
 
 			//Check if there's a sequence
 			result = checkSequence(tempGems, window, true);
@@ -418,23 +376,23 @@ bool Board::checkAvailableMoves(Gem gems[TOTAL_GEMS], Window *window)
 	}
 
 	//Test vertical swaps
-	for (int x = 0; x < 8; x++)
+	for (int x = 0; x < LINE_SIZE; x++)
 	{
-		for (int y = 0; y < 7; y++)
+		for (int y = 0; y < COLUMN_SIZE - 1; y++)
 		{
 			//Make a copy of the gems board
-			for (int x = 0; x < 8; x++)
+			for (int x = 0; x < LINE_SIZE; x++)
 			{
-				for (int y = 0; y < 8; y++)
+				for (int y = 0; y < COLUMN_SIZE; y++)
 				{
-					tempGems[x + y * 8] = gems[x + y * 8];
+					tempGems[x + y * COLUMN_SIZE] = gems[x + y * COLUMN_SIZE];
 				}
 			}
 
 			//Make swap
-			tempType = tempGems[x + y * 8].getType();
-			tempGems[x + y * 8].setType(tempGems[x + (y + 1) * 8].getType());
-			tempGems[x + ( y + 1) * 8].setType(tempType);
+			tempType = tempGems[x + y * COLUMN_SIZE].getType();
+			tempGems[x + y * COLUMN_SIZE].setType(tempGems[x + (y + 1) * COLUMN_SIZE].getType());
+			tempGems[x + ( y + 1) * COLUMN_SIZE].setType(tempType);
 
 			//Check if there's a sequence
 			result = checkSequence(tempGems, window, true);

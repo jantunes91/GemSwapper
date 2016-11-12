@@ -4,6 +4,11 @@
 #include "Variables.h"
 #include "Animation.h"
 
+enum SequenceOrientation {
+	HORIZONTAL = 0,
+	VERTICAL = 1,
+};
+
 class Board
 {
 public:

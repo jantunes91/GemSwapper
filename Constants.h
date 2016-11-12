@@ -7,7 +7,10 @@ const int SCREEN_HEIGHT = 768;
 //GEM constants
 const int GEM_WIDTH = 50;
 const int GEM_HEIGHT = 50;
+const int COLUMN_SIZE = 8;
+const int LINE_SIZE = 8;
 const int TOTAL_GEMS = 64;
+const int MIN_SEQUENCE_SIZE = 3;
 const int OFFSET_MULTIPLIER = 65;
 const int OFFSET_X = 400;
 const int OFFSET_Y = 100;

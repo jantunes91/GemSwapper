@@ -38,8 +38,8 @@ void Animation::swapGemsAnim(Gem *pressedGems[2], Gem gems[TOTAL_GEMS], Window *
 	bool animation0Done = false;
 	bool animation1Done = false;
 
-	while (!animation0Done && !animation1Done)
-	{
+	while (!animation0Done && !animation1Done) {
+
 		animation0Done = animate(tcurrent, SWAP_ANIMATION_TIME, pressedGems[0]);
 		animation1Done = animate(tcurrent, SWAP_ANIMATION_TIME, pressedGems[1]);
 
@@ -52,30 +52,23 @@ void Animation::sequenceRemoveAnim(Gem gems[TOTAL_GEMS], Window *window)
 	bool removed[TOTAL_GEMS];
 
 	//store the previous values of the gems' removed flag
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			removed[x + y * 8] = gems[x + y * 8].isRemoved();
+	for (int y = 0; y < COLUMN_SIZE; y++)	{
+		for (int x = 0; x < LINE_SIZE; x++) {
+			removed[x + y * COLUMN_SIZE] = gems[x + y * COLUMN_SIZE].isRemoved();
 		}
 	}
 
 	//alternate removed between true and false 4 times. this will cause the gem to flash 4 times
-	for (int i = 0; i < 4; i++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			for (int x = 0; x < 8; x++)
-			{
-				if (removed[x + y * 8])
-				{
-					if (gems[x + y * 8].isRemoved())
-					{
-						gems[x + y * 8].setRemoved(false);
+	for (int i = 0; i < 4; i++)	{
+
+		for (int y = 0; y < COLUMN_SIZE; y++)	{
+			for (int x = 0; x < LINE_SIZE; x++) {
+				if (removed[x + y * COLUMN_SIZE])	{
+					if (gems[x + y * COLUMN_SIZE].isRemoved()) {
+						gems[x + y * COLUMN_SIZE].setRemoved(false);
 					}
-					else
-					{
-						gems[x + y * 8].setRemoved(true);
+					else {
+						gems[x + y * COLUMN_SIZE].setRemoved(true);
 					}
 				}
 			}
@@ -93,15 +86,12 @@ void Animation::dropGemsAnim(Gem gems[TOTAL_GEMS], Window *window)
 	while (!animationDone)
 	{
 		animationDone = true;
-		for (int x = 0; x < 8; x++)
-		{
-			for (int y = 7; y >= 0; y--)
-			{
+		for (int x = 0; x < LINE_SIZE; x++) {
+			for (int y = COLUMN_SIZE - 1; y >= 0; y--) {
 				// If the gem is not empty and has to fall
-				if (gems[x + y * 8].toUpdate() == true && gems[x + y * 8].isRemoved() == false)
-				{
+				if (gems[x + y * COLUMN_SIZE].toUpdate() == true && gems[x + y * COLUMN_SIZE].isRemoved() == false)	{
 					//updates the animation and computes if all the animations are done
-					animationDone = animationDone & animate(tcurrent, 200, &gems[x + y * 8]);
+					animationDone = animationDone & animate(tcurrent, 200, &gems[x + y * COLUMN_SIZE]);
 				}
 			}
 		}

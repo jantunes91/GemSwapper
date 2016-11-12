@@ -9,7 +9,7 @@ Gem::Gem()
 
 	currentSprite = GEM_SPRITE_MOUSE_OUT;
 
-	type = 0;
+	type = GEM_BLACK;
 
 	removed = false;
 
@@ -166,34 +166,31 @@ void Gem::handleEvent(SDL_Event* e, Gem* pressedGems[2])
 
 void Gem::render()
 {
+	//Don't render removed Gems
 	if (removed)
 	{
 		return;
-		//type = -1;
 	}
+
 	//Show current gem sprite
-	if (type == 0)
+	switch (type)
 	{
+	case GEM_BLACK:
 		color1SpriteSheetTexture.render(position.x, position.y, &color1SpriteClips[currentSprite]);
-	}
-
-	if (type == 1)
-	{
+		break;
+	case GEM_WHITE:
 		color2SpriteSheetTexture.render(position.x, position.y, &color2SpriteClips[currentSprite]);
-	}
-
-	if (type == 2)
-	{
+		break;
+	case GEM_PINK:
 		color3SpriteSheetTexture.render(position.x, position.y, &color3SpriteClips[currentSprite]);
-	}
-
-	if (type == 3)
-	{
+		break;
+	case GEM_BLUE:
 		color4SpriteSheetTexture.render(position.x, position.y, &color4SpriteClips[currentSprite]);
-	}
-
-	if (type == 4)
-	{
+		break;
+	case GEM_ORANGE:
 		color5SpriteSheetTexture.render(position.x, position.y, &color5SpriteClips[currentSprite]);
+		break;
+	default:
+		break;
 	}
 }

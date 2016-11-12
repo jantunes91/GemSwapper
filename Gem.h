@@ -9,6 +9,15 @@ enum GemSprite
 	GEM_SPRITE_MOUSE_DOWN = 1,
 };
 
+enum GemType
+{
+	GEM_BLACK = 0,
+	GEM_WHITE = 1,
+	GEM_PINK = 2,
+	GEM_BLUE = 3,
+	GEM_ORANGE = 4,
+};
+
 //The mouse button
 class Gem
 {

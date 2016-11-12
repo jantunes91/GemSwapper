@@ -28,12 +28,12 @@ SDL_Point Button::getPosition()
 	return position;
 }
 
-char * Button::getID()
+int Button::getID()
 {
 	return id;
 }
 
-void Button::setID(char * tempID)
+void Button::setID(int tempID)
 {
 	id = tempID;
 }
@@ -102,21 +102,18 @@ bool Button::handleEvent(SDL_Event* e)
 
 void Button::render()
 {
-	//Show PLAY button
-	if (id == "play")
+	switch (id)
 	{
+	case BUTTON_PLAY:
 		playSpriteSheetTexture.render(position.x, position.y, &playSpriteClips[currentSprite]);
-	}
-
-	//Show PLAY AGAIN button
-	if (id == "playagain")
-	{
+		break;
+	case BUTTON_PLAYAGAIN:
 		playagainSpriteSheetTexture.render(position.x, position.y, &playagainSpriteClips[currentSprite]);
-	}
-
-	//Show QUIT Button
-	if (id == "quit")
-	{
+		break;
+	case BUTTON_QUIT:
 		quitSpriteSheetTexture.render(position.x, position.y, &quitSpriteClips[currentSprite]);
+		break;
+	default:
+		break;
 	}
 }
